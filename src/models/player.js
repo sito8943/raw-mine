@@ -1,4 +1,6 @@
 import Weapon from "./weapon";
+import Armor from "./armor";
+import Bag from "./bag";
 
 export default class Player {
   constructor(
