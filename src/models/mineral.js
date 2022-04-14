@@ -1,23 +1,23 @@
 export const MineralsEnum = [
-  { name: "Piedra" },
-  { name: "Carbón" },
-  { name: "Cobre" },
-  { name: "Estaño" },
-  { name: "Hierro" },
-  { name: "Ojo de Tigre" },
-  { name: "Oro" },
-  { name: "Cuarzo" },
-  { name: "Jaspe Rojo" },
-  { name: "Calcita" },
-  { name: "Aventurina" },
-  { name: "Obsidiana" },
-  { name: "Ruby" },
-  { name: "Safiro" },
-  { name: "Ágata" },
-  { name: "Malaquita" },
-  { name: "Amatista" },
-  { name: "Diamante" },
-  { name: "Esmeralda" },
+  { name: "Piedra" }, // material
+  { name: "Carbón" }, // material
+  { name: "Estaño" }, // material
+  { name: "Cobre" }, // material
+  { name: "Hierro" }, // material
+  { name: "Ojo de Tigre" }, // to sell
+  { name: "Malaquita" }, // to sell
+  { name: "Amatista" }, // to sell
+  { name: "Oro" }, // material +damage / to sell
+  { name: "Cuarzo" }, // material
+  { name: "Jaspe Rojo" }, // maeterial +life
+  { name: "Calcita" }, // material
+  { name: "Aventurina" }, // material ++damage
+  { name: "Obsidiana" }, // material ++defense
+  { name: "Ruby" }, // material ++life
+  { name: "Safiro" }, // material +++damage
+  { name: "Calcedonia" }, // material +all
+  { name: "Diamante" }, // material ++life ++defense
+  { name: "Esmeralda" }, // material ++damage ++defense
 ];
 
 export const MineralsEnumType = {

@@ -49,6 +49,11 @@ export const EnemiesEnum = [
     damage: 3,
   },
   {
+    name: "Gólem",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
     name: "Dragón",
     life: { max: 15 },
     damage: 3,
