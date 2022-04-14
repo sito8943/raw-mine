@@ -7,11 +7,13 @@ import pachan from "./assets/images/674.png";
 import starTextureImage from "./assets/images/star.png";
 
 const App = () => {
+  const [warpSpeed, setWarpSpeed] = useState(0);
+
   const init = () => {
     const app = new PIXI.Application({
-      width: 800,
-      height: 600,
-      backgroundColor: 0x1099bb,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: "#222333",
       resolution: window.devicePixelRatio || 1,
     });
     document.body.appendChild(app.view);
@@ -24,7 +26,6 @@ const App = () => {
     const fov = 20;
     const baseSpeed = 0.025;
     let speed = 0;
-    let warpSpeed = 0;
     const starStretch = 5;
     const starBaseSize = 0.05;
 
@@ -55,11 +56,6 @@ const App = () => {
       star.x = Math.cos(deg) * distance;
       star.y = Math.sin(deg) * distance;
     }
-
-    // Change flight speed every 5 seconds
-    setInterval(() => {
-      warpSpeed = warpSpeed > 0 ? 0 : 1;
-    }, 5000);
 
     // Listen for animate update
     app.ticker.add((delta) => {
@@ -106,7 +102,14 @@ const App = () => {
     }
   }, []);
 
-  return <div></div>;
+  return (
+    <div>
+      <button
+        style={{ position: "absolute", zIndex: 99 }}
+        onClick={() => setWarpSpeed(!warpSpeed)}
+      ></button>
+    </div>
+  );
 };
 
 export default App;
