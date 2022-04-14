@@ -4,6 +4,9 @@ import * as ReactDOMClient from "react-dom/client";
 // app
 import App from "./App";
 
+// style
+import "./index.css";
+
 const container = document.getElementById("root");
 
 // Create a root.
