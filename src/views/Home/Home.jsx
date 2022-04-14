@@ -8,6 +8,9 @@ import starTextureImage from "../../assets/images/star.png";
 // utils
 import app from "../../utils/app";
 
+// styles
+import "./style.css";
+
 let warpSpeed = 0;
 
 // Get the texture for rope.
@@ -52,11 +55,12 @@ function randomizeStar(star, initial) {
 const Home = (props) => {
   const ref = useRef(null);
 
+  const [started, setStarted] = useState(false);
   const [warpSpeedS, setWarpSpeedS] = useState(0);
 
   const init = (delta) => {
     // Simple easing. This should be changed to proper easing function when used for real.
-    speed += (warpSpeed - speed) / 20;
+    speed += (warpSpeed - speed) / 60;
     cameraZ += delta * 10 * (speed + baseSpeed);
     for (let i = 0; i < starAmount; i++) {
       const star = stars[i];
@@ -108,33 +112,17 @@ const Home = (props) => {
   }, [warpSpeedS]);
 
   const start = () => {
-    setWarpSpeedS(warpSpeedS === 0 ? 1 : 0);
+    setStarted(true);
+    setTimeout(() => {
+      setWarpSpeedS(warpSpeedS === 0 ? 1 : 0);
+    }, 1000);
   };
 
   return (
     <div ref={ref}>
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          position: "absolute",
-          zIndex: 99,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            background: "#222333",
-            borderRadius: "15px",
-            padding: "10px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <h1 style={{ color: "aliceblue" }}>RAW - Mines</h1>
+      <div className="main" style={{ opacity: started ? 0 : 1 }}>
+        <div className="home-form">
+          <h1 style={{ color: "#bdbbbb" }}>RAW - Mines</h1>
           <button onClick={start}>Comenzar</button>
         </div>
       </div>

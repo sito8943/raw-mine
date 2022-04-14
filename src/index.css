@@ -1,3 +1,22 @@
+@import url("http://fonts.cdnfonts.com/css/serious-rounded");
+
 body {
   margin: 0;
+  overflow: hidden;
+}
+
+* {
+  font-family: "seriousr2b", sans-serif;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #222222;
+  border: 2px dashed #222333;
+  cursor: pointer;
+  color: #000000;
+}
+
+button:hover {
+  color: #bdbbbb;
 }
