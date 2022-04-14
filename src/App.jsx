@@ -7,8 +7,6 @@ import pachan from "./assets/images/674.png";
 import starTextureImage from "./assets/images/star.png";
 
 const App = () => {
-  const [started, setStarted] = useState(false);
-
   const init = () => {
     const app = new PIXI.Application({
       width: 800,
@@ -101,13 +99,12 @@ const App = () => {
   };
 
   useEffect(() => {
-    setStarted(true);
-
-    if (!started) {
+    console.log(sessionStorage.getItem("o"));
+    if (sessionStorage.getItem("o") === null) {
+      sessionStorage.setItem("o", 1);
       init();
-      console.log(started);
     }
-  }, [started]);
+  }, []);
 
   return <div></div>;
 };
