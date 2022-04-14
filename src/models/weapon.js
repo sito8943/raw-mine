@@ -1,3 +1,11 @@
+export const WeaponseEnumType = {
+  "Pistola de Plástico": 1,
+};
+
+export const WeaponsEnum = [
+  { name: "Pistola de Plástico", ammo: -1, damage: 5 },
+];
+
 export default class Weapon {
   constructor(options = { damage: 0, ammo: 0, name: "" }) {
     const { damage, ammo, name } = options;

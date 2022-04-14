@@ -1,6 +1,7 @@
 import Weapon from "./weapon";
 import Armor from "./armor";
 import Bag from "./bag";
+import Drill from "./drill";
 
 export default class Player {
   constructor(
@@ -10,14 +11,16 @@ export default class Player {
       weapon: null,
       armor: null,
       bag: null,
+      drill: null,
     }
   ) {
-    const { name, life, weapon, armor, bag } = options;
+    const { name, life, weapon, armor, bag, drill } = options;
     this.name = name;
     this.life = { max: life.max, current: life.current };
     this.weapon = weapon === null ? new Weapon() : weapon;
     this.armor = armor === null ? new Armor() : armor;
     this.bag = bag === null ? new Bag() : bag;
+    this.drill = drill === null ? new Drill(1) : drill;
   }
 
   get Name() {
@@ -40,6 +43,10 @@ export default class Player {
     return this.bag;
   }
 
+  get Drill() {
+    return this.drill;
+  }
+
   set Name(newName) {
     this.name = newName;
   }
@@ -58,5 +65,9 @@ export default class Player {
 
   set Bag(newBag) {
     this.bag = newBag;
+  }
+
+  set Drill(newDrill) {
+    this.drill = newDrill;
   }
 }
