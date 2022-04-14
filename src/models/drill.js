@@ -1,8 +1,10 @@
 export const DrillsEnumType = {
-  "Taladro de Plástico": 1,
+  "Taladro de Cobre": 1,
 };
 
-export const DrillsEnum = [{ name: "Taladro de Plástico" }];
+export const DrillsEnum = [
+  { name: "Taladro de Cobre", req: [{ name: "Cobre", count: 3 }] },
+];
 
 export default class Drill {
   constructor(options = { name: "" }) {
