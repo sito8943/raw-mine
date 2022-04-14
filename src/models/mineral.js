@@ -1,5 +1,5 @@
 export const MineralsEnum = [
-  { name: "Piedra" }, // material
+  { name: "Piedra" }, // trash
   { name: "Carbón" }, // material
   { name: "Estaño" }, // material
   { name: "Cobre" }, // material
