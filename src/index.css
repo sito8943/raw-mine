@@ -11,10 +11,28 @@ body {
 
 button {
   padding: 10px 20px;
+  margin: 10;
   background-color: #222222;
-  border: 2px dashed #222333;
+  border: 2px dashed #646566;
   cursor: pointer;
   color: #000000;
+}
+
+input {
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #222222;
+  border: 2px dashed #646566;
+  color: #bdbbbb;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+label {
+  color: #bdbbbb;
 }
 
 button:hover {

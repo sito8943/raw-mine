@@ -9,9 +9,13 @@
   transition: all 400ms ease;
 }
 
+.creation-form {
+  flex-direction: column;
+  display: flex;
+}
+
 .home-form {
   background: #222333;
-  border-radius: 15px;
   border: 2px dashed #646566;
   padding: 10px;
   display: flex;

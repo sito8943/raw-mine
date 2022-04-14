@@ -10,6 +10,8 @@ import app from "../../utils/app";
 
 // styles
 import "./style.css";
+import Welcome from "../../layouts/Welcome/Welcome";
+import CharacterCreation from "../../layouts/CharacterCreation/CharacterCreation";
 
 let warpSpeed = 0;
 
@@ -56,11 +58,12 @@ const Home = (props) => {
   const ref = useRef(null);
 
   const [started, setStarted] = useState(false);
+  const [where, setWhere] = useState(0);
   const [warpSpeedS, setWarpSpeedS] = useState(0);
 
   const init = (delta) => {
     // Simple easing. This should be changed to proper easing function when used for real.
-    speed += (warpSpeed - speed) / 60;
+    speed += (warpSpeed - speed) / 80;
     cameraZ += delta * 10 * (speed + baseSpeed);
     for (let i = 0; i < starAmount; i++) {
       const star = stars[i];
@@ -114,17 +117,22 @@ const Home = (props) => {
   const start = () => {
     setStarted(true);
     setTimeout(() => {
-      setWarpSpeedS(warpSpeedS === 0 ? 1 : 0);
+      setWarpSpeedS(1);
     }, 1000);
+    setTimeout(() => {
+      setWarpSpeedS(0);
+      setStarted(false);
+      setWhere(1);
+    }, 5000);
   };
+
+  const creation = () => {};
 
   return (
     <div ref={ref}>
       <div className="main" style={{ opacity: started ? 0 : 1 }}>
-        <div className="home-form">
-          <h1 style={{ color: "#bdbbbb" }}>RAW - Mines</h1>
-          <button onClick={start}>Comenzar</button>
-        </div>
+        {where === 0 && <Welcome start={start} />}
+        {where === 1 && <CharacterCreation start={creation} />}
       </div>
     </div>
   );
