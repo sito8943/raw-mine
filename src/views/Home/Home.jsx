@@ -126,7 +126,18 @@ const Home = (props) => {
     }, 5000);
   };
 
-  const creation = () => {};
+  const creation = (name) => {
+    console.log("hola");
+    setStarted(true);
+    setTimeout(() => {
+      setWarpSpeedS(1);
+    }, 1000);
+    setTimeout(() => {
+      setWarpSpeedS(0);
+      setStarted(false);
+      setWhere(1);
+    }, 5000);
+  };
 
   return (
     <div ref={ref}>

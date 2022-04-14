@@ -16,17 +16,26 @@ const CharacterCreation = (props) => {
     }
   };
 
+  const submit = (e) => {
+    console.log("hola");
+    e.preventDefault();
+    console.log("hola");
+    start(name);
+  };
+
   return (
     <div>
       <div className="home-form">
         <h1>Crea tu minero</h1>
-        <form onSubmit={start}>
+        <form>
           <div className="creation-form">
             <label htmlFor="name">Introduce tu nombre:</label>
             <input value={name} onChange={handleInputs} id="name" />
           </div>
         </form>
-        <button type="submit">Comenzar</button>
+        <button type="submit" onClick={submit}>
+          Comenzar
+        </button>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@
 }
 
 .home-form {
+  border-radius: 15px;
   background: #222333;
   border: 2px dashed #646566;
   padding: 10px;
