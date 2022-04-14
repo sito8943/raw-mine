@@ -4,8 +4,54 @@ export const EnemiesEnumType = {
 
 export const EnemiesEnum = [
   {
-    name: "Slime",
+    name: "Slime de cueva",
     life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Planta carnivora",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Hongo aturdidor",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Araña gigante",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Escarabajo pistolero",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Murciélago gigante",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Goblin",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Troll",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Minero enano",
+    life: { max: 15 },
+    damage: 3,
+  },
+  {
+    name: "Dragón",
+    life: { max: 15 },
+    damage: 3,
   },
 ];
 

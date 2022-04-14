@@ -1,8 +1,8 @@
 export const ArmorsEnumType = {
-  "Armadura de Plástica": 1,
+  "Armadura de Cobre": 1,
 };
 
-export const ArmorsEnum = [{ name: "Armadura de Plástica", defense: 1 }];
+export const ArmorsEnum = [{ name: "Armadura de Cobre", defense: 1 }];
 
 export default class Armor {
   constructor(options = { name: "", defense: 0 }) {
