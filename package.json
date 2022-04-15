@@ -44,6 +44,7 @@
     "url": "https://github.com/SitoNumbis/raw-mine/issues"
   },
   "dependencies": {
+    "dungeoneer": "^2.1.5",
     "parcel": "^2.4.1",
     "pixi.js": "^6.3.0",
     "prop-types": "^15.8.1",

@@ -38,6 +38,18 @@ export const WeaponsEnum = [
       { name: "Hierro", count: 1 },
     ],
   },
+  {
+    name: "Rifle Azul",
+    ammo: 1 * 10,
+    damage: 15,
+    reload: 100,
+    speed: 10,
+    req: [
+      { name: "Zafiro", count: 3 },
+      { name: "Oro", count: 1 },
+      { name: "Hierro", count: 2 },
+    ],
+  },
 ];
 
 export default class Weapon {

@@ -57,7 +57,7 @@ let fires = [];
 const player = new Player({
   name: "Sito",
   life: { max: 20, current: 20 },
-  weapon: new Weapon(WeaponsEnum[0]),
+  weapon: new Weapon(WeaponsEnum[4]),
 });
 
 const Game = () => {
@@ -71,28 +71,48 @@ const Game = () => {
 
   useEffect(() => {
     if (!up) clearInterval(fUp);
-    else executeFireUp();
+    else {
+      executeFireUp();
+      clearInterval(fRight);
+      clearInterval(fDown);
+      clearInterval(fLeft);
+    }
   }, [up]);
 
   const [left, setLeft] = useState(false);
 
   useEffect(() => {
     if (!left) clearInterval(fLeft);
-    else executeFireLeft();
+    else {
+      executeFireLeft();
+      clearInterval(fUp);
+      clearInterval(fDown);
+      clearInterval(fRight);
+    }
   }, [left]);
 
   const [right, setRight] = useState(false);
 
   useEffect(() => {
     if (!right) clearInterval(fRight);
-    else executeFireRight();
+    else {
+      executeFireRight();
+      clearInterval(fLeft);
+      clearInterval(fDown);
+      clearInterval(fUp);
+    }
   }, [right]);
 
   const [down, setDown] = useState(false);
 
   useEffect(() => {
     if (!down) clearInterval(fDown);
-    else executeFireDown();
+    else {
+      executeFireDown();
+      clearInterval(fRight);
+      clearInterval(fUp);
+      clearInterval(fLeft);
+    }
   }, [down]);
 
   const activate = (which) => {
