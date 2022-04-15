@@ -27,14 +27,14 @@ const character = new PIXI.Sprite.from(characterImg);
 character.width = 60;
 character.height = 60;
 
-// spark
-let spX = 0;
-let spY = 0;
-
 let mouseX = 0;
 let mouseY = 0;
 
-let sparkCount = 2;
+let sparks = [];
+let sparkXs = [];
+let sparkYs = [];
+let sparkCount = 0;
+// let sparkA = new PIXI.Sprite.from(spark);
 
 // keys intervals
 let iDown = null;
@@ -49,7 +49,6 @@ let fUp = null;
 
 // fire intervals
 let fires = [];
-let fireI = null;
 
 const Game = () => {
   const ref = useRef(null);
@@ -76,43 +75,51 @@ const Game = () => {
     mouseX = global.x;
     mouseY = global.y;
     if (button === 2) {
-      // Fcollect();
+      // collect();
     } else {
-      fire();
+      // fire();
     }
   };
 
   const fire = (direction) => {
-    spX = playerX + 30;
-    spY = playerY + 30;
-    const sparkA = new PIXI.Sprite.from(spark);
-    app.stage.addChildAt(sparkA, sparkCount);
     sparkCount += 1;
-    console.log(sparkCount);
+    const newLength = sparkCount;
+    sparks[newLength] = new PIXI.Sprite.from(spark);
+    sparkXs[newLength] = playerX + 30;
+    sparkYs[newLength] = playerY + 30;
+    app.stage.addChild(sparks[newLength]);
 
     app.ticker.add((delta) => {
-      console.log("holas");
-      app.stage.children[sparkCount - 1].x = spX;
-      app.stage.children[sparkCount - 1].y = spY;
+      sparks[newLength].x = sparkXs[newLength];
+      sparks[newLength].y = sparkYs[newLength];
     });
 
     const index = fires.length;
     let newI = setInterval(() => {
       if (direction === "up") {
-        spY -= 1;
-        if (spY < -10) {
+        sparkYs[newLength] -= 1;
+        if (sparkYs[sparkCount - 1] < -10) {
           clearInterval(fires[index]);
-          app.stage.removeChildAt(index + 2);
+          app.stage.removeChild(sparks[newLength]);
         }
       } else if (direction === "right") {
-        spX += 1;
-        if (spX > app.screen.width) clearInterval(fires[index]);
+        sparkXs[sparkCount - 1] += 1;
+        if (sparkXs[newLength] > app.screen.width) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
       } else if (direction === "down") {
-        spY += 1;
-        if (spY > app.screen.height) clearInterval(fires[index]);
+        sparkYs[sparkCount - 1] += 1;
+        if (sparkYs[sparkCount - 1] > app.screen.height) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
       } else if (direction === "left") {
-        spX -= 1;
-        if (spX < -10) clearInterval(fires[index]);
+        sparkXs[newLength] -= 1;
+        if (sparkXs[newLength] < -10) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
       }
     }, 1);
     fires.push(newI);
@@ -167,9 +174,9 @@ const Game = () => {
       case "ArrowRight":
         return setRight(false);
       case "ArrowDown":
-        return setLeft(false);
-      case "ArrowLeft":
         return setDown(false);
+      case "ArrowLeft":
+        return setLeft(false);
       default:
         break;
     }
@@ -291,7 +298,7 @@ const Game = () => {
         <div className="wContainer">
           <button
             id="fup"
-            className={up ? "active" : ""}
+            className={`arrow ${up ? "active" : ""}`}
             onClick={handleDirection}
           >
             ↑
@@ -300,14 +307,14 @@ const Game = () => {
         <div className="adContainer">
           <button
             id="fleft"
-            className={left ? "active" : ""}
+            className={`arrow ${left ? "active" : ""}`}
             onClick={handleDirection}
           >
             ←
           </button>
           <button
             id="fright"
-            className={right ? "active" : ""}
+            className={`arrow ${right ? "active" : ""}`}
             onClick={handleDirection}
           >
             →
@@ -316,7 +323,7 @@ const Game = () => {
         <div className="wContainer">
           <button
             id="fdown"
-            className={down ? "active" : ""}
+            className={`arrow ${down ? "active" : ""}`}
             onClick={handleDirection}
           >
             ↓

@@ -4,6 +4,12 @@
   bottom: 10px;
   left: 10px;
 }
+
+.arrow {
+  padding: 2px 19px;
+  font-size: 23px;
+}
+
 .arrows {
   position: absolute;
   width: 200px;
