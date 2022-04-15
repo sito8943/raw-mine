@@ -9,6 +9,10 @@ import spark from "../../assets/images/spark.gif";
 // utils
 import app from "../../utils/app";
 
+// models
+import Weapon, { WeaponsEnum } from "../../models/weapon";
+import Player from "../../models/player";
+
 // styles
 import "./style.css";
 
@@ -49,6 +53,12 @@ let fUp = null;
 
 // fire intervals
 let fires = [];
+
+const player = new Player({
+  name: "Sito",
+  life: { max: 20, current: 20 },
+  weapon: new Weapon(WeaponsEnum[0]),
+});
 
 const Game = () => {
   const ref = useRef(null);
@@ -97,25 +107,25 @@ const Game = () => {
     const index = fires.length;
     let newI = setInterval(() => {
       if (direction === "up") {
-        sparkYs[newLength] -= 1;
-        if (sparkYs[sparkCount - 1] < -10) {
+        sparkYs[newLength] -= player.Weapon.Speed;
+        if (sparkYs[newLength] < -10) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
       } else if (direction === "right") {
-        sparkXs[sparkCount - 1] += 1;
+        sparkXs[newLength] += player.Weapon.Speed;
         if (sparkXs[newLength] > app.screen.width) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
       } else if (direction === "down") {
-        sparkYs[sparkCount - 1] += 1;
-        if (sparkYs[sparkCount - 1] > app.screen.height) {
+        sparkYs[newLength] += player.Weapon.Speed;
+        if (sparkYs[newLength] > app.screen.height) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
       } else if (direction === "left") {
-        sparkXs[newLength] -= 1;
+        sparkXs[newLength] -= player.Weapon.Speed;
         if (sparkXs[newLength] < -10) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
