@@ -4,6 +4,7 @@ import * as PIXI from "pixi.js";
 
 import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
+import spark from "../../assets/images/spark.gif";
 
 // utils
 import app from "../../utils/app";
@@ -26,6 +27,16 @@ const character = new PIXI.Sprite.from(characterImg);
 character.width = 60;
 character.height = 60;
 
+// spark
+let spX = 0;
+let spY = 0;
+const sparkA = new PIXI.Sprite.from(spark);
+
+let mouseX = 0;
+let mouseY = 0;
+
+let fireI = null;
+
 const Game = () => {
   const ref = useRef(null);
   const [mousePosition, setMousePosition] = useState();
@@ -36,7 +47,8 @@ const Game = () => {
 
   const onClick = (e) => {
     const { global, button } = e.data;
-    setMousePosition(global);
+    mouseX = global.x;
+    mouseY = global.y;
     if (button === 2) {
       collect();
     } else {
@@ -44,8 +56,24 @@ const Game = () => {
     }
   };
 
-  const fire = () => {
-    console.log("fire");
+  const fire = (direction) => {
+    spX = playerX + 30;
+    spY = playerY + 30;
+    fireI = setInterval(() => {
+      if (direction === "up") {
+        spY -= 1;
+        if (spY < -10) clearInterval(fireI);
+      } else if (direction === "right") {
+        spX += 1;
+        if (spX > app.screen.width) clearInterval(fireI);
+      } else if (direction === "down") {
+        spY += 1;
+        if (spY > app.screen.height) clearInterval(fireI);
+      } else if (direction === "left") {
+        spX -= 1;
+        if (spX < -10) clearInterval(fireI);
+      }
+    }, 1);
   };
 
   const collect = () => {
@@ -55,6 +83,11 @@ const Game = () => {
   const init = (delta) => {
     character.x = playerX;
     character.y = playerY;
+  };
+
+  const fireA = (delta) => {
+    sparkA.x = spX;
+    sparkA.y = spY;
   };
 
   useEffect(() => {
@@ -73,7 +106,10 @@ const Game = () => {
 
     app.stage.addChild(character);
 
+    app.stage.addChild(sparkA);
+
     app.ticker.add(init);
+    app.ticker.add(fireA);
 
     return () => {
       // On unload stop the application
@@ -93,27 +129,35 @@ const Game = () => {
     switch (key) {
       case "w":
       case "W":
-      case "ArrowUp":
         playerY -= 5;
         setW(true);
         break;
       case "d":
       case "D":
-      case "ArrowRight":
         playerX += 5;
         setD(true);
         break;
       case "s":
       case "S":
-      case "ArrowDown":
         playerY += 5;
         setS(true);
         break;
       case "a":
       case "A":
-      case "ArrowLeft":
         playerX -= 5;
         setA(true);
+        break;
+      case "ArrowUp":
+        fire("up");
+        break;
+      case "ArrowRight":
+        fire("right");
+        break;
+      case "ArrowDown":
+        fire("down");
+        break;
+      case "ArrowLeft":
+        fire("left");
         break;
       default:
         break;
