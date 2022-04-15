@@ -127,21 +127,19 @@ const Home = (props) => {
   };
 
   const creation = (name) => {
-    console.log("hola");
+    localStorage.setItem("player", name);
     setStarted(true);
     setTimeout(() => {
       setWarpSpeedS(1);
     }, 1000);
-    setTimeout(() => {
-      setWarpSpeedS(0);
-      setStarted(false);
-      setWhere(1);
-    }, 5000);
   };
 
   return (
     <div ref={ref}>
-      <div className="main" style={{ opacity: started ? 0 : 1 }}>
+      <div
+        className="main"
+        style={{ opacity: started ? 0 : 1, zIndex: started ? 0 : 1 }}
+      >
         {where === 0 && <Welcome start={start} />}
         {where === 1 && <CharacterCreation start={creation} />}
       </div>

@@ -17,9 +17,7 @@ const CharacterCreation = (props) => {
   };
 
   const submit = (e) => {
-    console.log("hola");
     e.preventDefault();
-    console.log("hola");
     start(name);
   };
 
@@ -27,7 +25,7 @@ const CharacterCreation = (props) => {
     <div>
       <div className="home-form">
         <h1>Crea tu minero</h1>
-        <form>
+        <form onSubmit={submit}>
           <div className="creation-form">
             <label htmlFor="name">Introduce tu nombre:</label>
             <input value={name} onChange={handleInputs} id="name" />
