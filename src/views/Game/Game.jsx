@@ -68,9 +68,32 @@ const Game = () => {
   const [d, setD] = useState(false);
   const [s, setS] = useState(false);
   const [up, setUp] = useState(false);
+
+  useEffect(() => {
+    if (!up) clearInterval(fUp);
+    else executeFireUp();
+  }, [up]);
+
   const [left, setLeft] = useState(false);
+
+  useEffect(() => {
+    if (!left) clearInterval(fLeft);
+    else executeFireLeft();
+  }, [left]);
+
   const [right, setRight] = useState(false);
+
+  useEffect(() => {
+    if (!right) clearInterval(fRight);
+    else executeFireRight();
+  }, [right]);
+
   const [down, setDown] = useState(false);
+
+  useEffect(() => {
+    if (!down) clearInterval(fDown);
+    else executeFireDown();
+  }, [down]);
 
   const activate = (which) => {
     switch (which) {
@@ -91,7 +114,7 @@ const Game = () => {
     }
   };
 
-  const fire = (direction) => {
+  const executeFireUp = () => {
     sparkCount += 1;
     const newLength = sparkCount;
     sparks[newLength] = new PIXI.Sprite.from(spark);
@@ -106,33 +129,181 @@ const Game = () => {
 
     const index = fires.length;
     let newI = setInterval(() => {
-      if (direction === "up") {
+      sparkYs[newLength] -= player.Weapon.Speed;
+      if (sparkYs[newLength] < -10) {
+        clearInterval(fires[index]);
+        app.stage.removeChild(sparks[newLength]);
+      }
+    }, 1);
+    fires.push(newI);
+
+    // reload and fire
+    fUp = setInterval(() => {
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
+
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
+      const index = fires.length;
+      let newI = setInterval(() => {
         sparkYs[newLength] -= player.Weapon.Speed;
         if (sparkYs[newLength] < -10) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
-      } else if (direction === "right") {
+      }, 1);
+      fires.push(newI);
+    }, player.Weapon.Reload);
+  };
+
+  const executeFireRight = () => {
+    sparkCount += 1;
+    const newLength = sparkCount;
+    sparks[newLength] = new PIXI.Sprite.from(spark);
+    sparkXs[newLength] = playerX + 30;
+    sparkYs[newLength] = playerY + 30;
+    app.stage.addChild(sparks[newLength]);
+
+    app.ticker.add((delta) => {
+      sparks[newLength].x = sparkXs[newLength];
+      sparks[newLength].y = sparkYs[newLength];
+    });
+
+    const index = fires.length;
+    let newI = setInterval(() => {
+      sparkXs[newLength] += player.Weapon.Speed;
+      if (sparkXs[newLength] > app.screen.width) {
+        clearInterval(fires[index]);
+        app.stage.removeChild(sparks[newLength]);
+      }
+    }, 1);
+    fires.push(newI);
+
+    // reload and fire
+    fRight = setInterval(() => {
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
+
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
+      const index = fires.length;
+      let newI = setInterval(() => {
         sparkXs[newLength] += player.Weapon.Speed;
         if (sparkXs[newLength] > app.screen.width) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
-      } else if (direction === "down") {
+      }, 1);
+      fires.push(newI);
+    }, player.Weapon.Reload);
+  };
+
+  const executeFireDown = () => {
+    sparkCount += 1;
+    const newLength = sparkCount;
+    sparks[newLength] = new PIXI.Sprite.from(spark);
+    sparkXs[newLength] = playerX + 30;
+    sparkYs[newLength] = playerY + 30;
+    app.stage.addChild(sparks[newLength]);
+
+    app.ticker.add((delta) => {
+      sparks[newLength].x = sparkXs[newLength];
+      sparks[newLength].y = sparkYs[newLength];
+    });
+
+    const index = fires.length;
+    let newI = setInterval(() => {
+      sparkYs[newLength] += player.Weapon.Speed;
+      if (sparkYs[newLength] > app.screen.height) {
+        clearInterval(fires[index]);
+        app.stage.removeChild(sparks[newLength]);
+      }
+    }, 1);
+    fires.push(newI);
+
+    // reload and fire
+    fDown = setInterval(() => {
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
+
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
+      const index = fires.length;
+      let newI = setInterval(() => {
         sparkYs[newLength] += player.Weapon.Speed;
-        if (sparkYs[newLength] > app.screen.height) {
+        if (sparkYs[newLength] < -10) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
-      } else if (direction === "left") {
+      }, 1);
+      fires.push(newI);
+    }, player.Weapon.Reload);
+  };
+
+  const executeFireLeft = () => {
+    sparkCount += 1;
+    const newLength = sparkCount;
+    sparks[newLength] = new PIXI.Sprite.from(spark);
+    sparkXs[newLength] = playerX + 30;
+    sparkYs[newLength] = playerY + 30;
+    app.stage.addChild(sparks[newLength]);
+
+    app.ticker.add((delta) => {
+      sparks[newLength].x = sparkXs[newLength];
+      sparks[newLength].y = sparkYs[newLength];
+    });
+
+    const index = fires.length;
+    let newI = setInterval(() => {
+      sparkXs[newLength] -= player.Weapon.Speed;
+      if (sparkXs[newLength] < -10) {
+        clearInterval(fires[index]);
+        app.stage.removeChild(sparks[newLength]);
+      }
+    }, 1);
+    fires.push(newI);
+
+    // reload and fire
+    fLeft = setInterval(() => {
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
+
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
+      const index = fires.length;
+      let newI = setInterval(() => {
         sparkXs[newLength] -= player.Weapon.Speed;
         if (sparkXs[newLength] < -10) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
-      }
-    }, 1);
-    fires.push(newI);
+      }, 1);
+      fires.push(newI);
+    }, player.Weapon.Reload);
   };
 
   const init = (delta) => {
@@ -216,21 +387,13 @@ const Game = () => {
         setA(true);
         break;
       case "ArrowUp":
-        fire("up");
-        setUp(true);
-        break;
+        return setUp(true);
       case "ArrowRight":
-        fire("right");
-        setRight(true);
-        break;
+        return setRight(true);
       case "ArrowDown":
-        fire("down");
-        setDown(true);
-        break;
+        return setDown(true);
       case "ArrowLeft":
-        fire("left");
-        setLeft(true);
-        break;
+        return setLeft(true);
       default:
         break;
     }
@@ -240,18 +403,13 @@ const Game = () => {
     const { id } = e.target;
     switch (id) {
       case "fup":
-        fire("up");
-        // activate("fUp");
-        break;
+        return executeFireUp();
       case "fright":
-        fire("right");
-        break;
+        return executeFireRight();
       case "fleft":
-        fire("down");
-        break;
+        return executeFireLeft();
       case "fdown":
-        fire("left");
-        break;
+        return executeFireDown();
       case "up":
         playerY -= 5;
         break;
