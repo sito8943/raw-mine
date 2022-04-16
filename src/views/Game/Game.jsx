@@ -50,7 +50,7 @@ let sparks = [];
 let sparkXs = [];
 let sparkYs = [];
 let sparkCount = 0;
-// let sparkA = CreateSpark(spark);
+// let sparkA = CreateSpark(spark, playerX, playerY);
 
 // keys intervals
 let iDown = null;
@@ -224,7 +224,7 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -254,7 +254,7 @@ const Game = () => {
       setAudioControllerState({ type: "shot" });
       onReload = true;
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -284,7 +284,7 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -313,7 +313,7 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -343,7 +343,7 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -372,7 +372,7 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -402,9 +402,9 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -431,9 +431,9 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = CreateSpark(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark, playerX, playerY);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -505,14 +505,15 @@ const Game = () => {
 
     // dungeon
     const dungeon = dungeoneer.build({
-      width: 20 * 35,
-      height: 20 * 35,
+      width: app.screen.width,
+      height: app.screen.height,
       seed,
     });
     // app.stage.addChild(sprite);
     const tiles = dungeon.tiles;
-    for (let i = 0; i < app.screen.height / 35; ++i) {
-      for (let j = 0; j < app.screen.width / 35; ++j) {
+    console.log(tiles);
+    for (let i = 0; i < 20; ++i) {
+      for (let j = 0; j < 20; ++j) {
         if (tiles[i][j].type === "wall" || tiles[i][j].type === "door") {
           const wall = new PIXI.Sprite.from(dirt);
           wall.width = 35;

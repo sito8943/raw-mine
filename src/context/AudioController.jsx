@@ -3,7 +3,6 @@ import * as React from "react";
 const AudioController = React.createContext();
 
 const audioControllerReducer = (audioControllerState, action) => {
-  console.log(action);
   switch (action.type) {
     case "wallHit": {
       let newWallHit = 0;
