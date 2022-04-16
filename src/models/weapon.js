@@ -41,7 +41,7 @@ export const WeaponsEnum = [
   {
     name: "Rifle Azul",
     ammo: 1 * 10,
-    damage: 15,
+    damage: 1,
     reload: 100,
     speed: 10,
     req: [

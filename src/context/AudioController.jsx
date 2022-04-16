@@ -5,11 +5,15 @@ const AudioController = React.createContext();
 const audioControllerReducer = (audioControllerState, action) => {
   console.log(action);
   switch (action.type) {
-    case "enemyHit":
+    case "enemyHit": {
+      let newEnemyHit = 0;
+      if (audioControllerState.shot === 1) newEnemyHit = 2;
+      else newEnemyHit = 1;
       return {
         ...audioControllerState,
-        enemyHit: true,
+        enemyHit: newEnemyHit,
       };
+    }
     case "reloading": {
       let newReloading = 0;
       if (audioControllerState.shot === 1) newReloading = 2;

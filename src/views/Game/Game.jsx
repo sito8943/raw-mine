@@ -34,11 +34,17 @@ sprite.interactive = true;
 // character
 const character = new PIXI.Sprite.from(characterImg);
 const enemy = new PIXI.Sprite.from(characterImg);
+const enemy1 = new PIXI.Sprite.from(characterImg);
+const enemy2 = new PIXI.Sprite.from(characterImg);
 
 character.width = 60;
 character.height = 60;
 enemy.width = 60;
 enemy.height = 60;
+enemy1.width = 60;
+enemy1.height = 60;
+enemy2.width = 60;
+enemy2.height = 60;
 
 let mouseX = 0;
 let mouseY = 0;
@@ -69,11 +75,13 @@ let allColliders = [
     {
       name: "Sito",
       life: { max: 15, current: 15 },
-      weapon: new Weapon(WeaponsEnum[3]),
+      weapon: new Weapon(WeaponsEnum[4]),
     },
     character
   ),
   new Enemy(EnemiesEnum[0], enemy),
+  new Enemy(EnemiesEnum[0], enemy1),
+  new Enemy(EnemiesEnum[0], enemy2),
 ];
 
 const player = allColliders[0];
@@ -457,6 +465,8 @@ const Game = () => {
     sprite.on("pointerdown", onClick);
     app.stage.addChild(sprite);
     app.stage.addChild(enemy);
+    app.stage.addChild(enemy1);
+    app.stage.addChild(enemy2);
 
     playerX = app.screen.width / 2;
     playerY = app.screen.height / 2;
@@ -466,7 +476,10 @@ const Game = () => {
 
     enemy.x = 200;
     enemy.y = 200;
-
+    enemy1.x = 400;
+    enemy1.y = 400;
+    enemy2.x = 600;
+    enemy2.y = 400;
     app.ticker.add((delta) => {
       character.x = playerX;
       character.y = playerY;
@@ -544,6 +557,28 @@ const Game = () => {
     const { id } = e.target;
     switch (id) {
       case "fup":
+        return setUp(true);
+      case "fright":
+        return setRight(true);
+      case "fleft":
+        return setLeft(true);
+      case "fdown":
+        return setDown(true);
+      case "up":
+        return setW(true);
+      case "right":
+        return setD(true);
+      case "down":
+        return setS(true);
+      default: //left
+        return setA(true);
+    }
+  };
+
+  const handleRelease = (e) => {
+    const { id } = e.target;
+    switch (id) {
+      case "fup":
         return executeFireUp();
       case "fright":
         return executeFireRight();
@@ -591,6 +626,7 @@ const Game = () => {
           sprite.y >= currentSprite.y &&
           sprite.y <= currentSprite.y + currentSprite.height
         ) {
+          setAudioControllerState({ type: "enemyHit" });
           if (allColliders[i].TakeDamage(player.Weapon.Damage))
             app.stage.removeChild(currentSprite);
           return true;
@@ -600,6 +636,7 @@ const Game = () => {
           sprite.y + sprite.height >= currentSprite.y &&
           sprite.y + sprite.height <= currentSprite.y + currentSprite.height
         ) {
+          setAudioControllerState({ type: "enemyHit" });
           if (allColliders[i].TakeDamage(player.Weapon.Damage))
             app.stage.removeChild(currentSprite);
           return true;
@@ -615,7 +652,8 @@ const Game = () => {
           <button
             id="up"
             className={w ? "active" : ""}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             W
           </button>
