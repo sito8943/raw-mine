@@ -16,6 +16,7 @@ import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.pn
 
 // utils
 import app from "../../utils/app";
+import CreateSpark from "../../utils/spark";
 
 // models
 import Weapon, { WeaponsEnum } from "../../models/weapon";
@@ -45,14 +46,11 @@ enemy1.height = 60;
 enemy2.width = 60;
 enemy2.height = 60;
 
-let mouseX = 0;
-let mouseY = 0;
-
 let sparks = [];
 let sparkXs = [];
 let sparkYs = [];
 let sparkCount = 0;
-// let sparkA = new PIXI.Sprite.from(spark);
+// let sparkA = CreateSpark(spark);
 
 // keys intervals
 let iDown = null;
@@ -117,10 +115,10 @@ const Game = () => {
   useEffect(() => {
     if (!w) clearInterval(iUp);
     else {
-      executeMoveUp();
       clearInterval(iRight);
       clearInterval(iDown);
       clearInterval(iLeft);
+      executeMoveUp();
     }
   }, [w]);
 
@@ -129,10 +127,10 @@ const Game = () => {
   useEffect(() => {
     if (!a) clearInterval(iLeft);
     else {
-      executeMoveLeft();
       clearInterval(iRight);
       clearInterval(iDown);
       clearInterval(iUp);
+      executeMoveLeft();
     }
   }, [a]);
 
@@ -141,10 +139,10 @@ const Game = () => {
   useEffect(() => {
     if (!d) clearInterval(iRight);
     else {
-      executeMoveRight();
       clearInterval(iUp);
       clearInterval(iDown);
       clearInterval(iLeft);
+      executeMoveRight();
     }
   }, [d]);
 
@@ -153,10 +151,10 @@ const Game = () => {
   useEffect(() => {
     if (!s) clearInterval(iDown);
     else {
-      executeMoveDown();
       clearInterval(iRight);
       clearInterval(iUp);
       clearInterval(iLeft);
+      executeMoveDown();
     }
   }, [s]);
 
@@ -210,8 +208,8 @@ const Game = () => {
 
   const onClick = (e) => {
     const { global, button } = e.data;
-    mouseX = global.x;
-    mouseY = global.y;
+    // mouseX = global.x;
+    // mouseY = global.y;
     if (button === 2) {
       // collect();
     } else {
@@ -226,9 +224,9 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 20;
-      sparkYs[newLength] = playerY + 20;
+      sparks[newLength] = CreateSpark(spark);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -256,7 +254,7 @@ const Game = () => {
       setAudioControllerState({ type: "shot" });
       onReload = true;
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparks[newLength] = CreateSpark(spark);
       sparkXs[newLength] = playerX + 10;
       sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
@@ -286,9 +284,9 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -315,9 +313,9 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -345,9 +343,9 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -374,9 +372,9 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparks[newLength] = CreateSpark(spark);
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -404,7 +402,7 @@ const Game = () => {
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparks[newLength] = CreateSpark(spark);
       sparkXs[newLength] = playerX + 30;
       sparkYs[newLength] = playerY + 30;
       app.stage.addChild(sparks[newLength]);
@@ -433,7 +431,7 @@ const Game = () => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
-      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparks[newLength] = CreateSpark(spark);
       sparkXs[newLength] = playerX + 30;
       sparkYs[newLength] = playerY + 30;
       app.stage.addChild(sparks[newLength]);
@@ -462,35 +460,37 @@ const Game = () => {
     if (playerY >= 5 && !colliderCollision(player.Sprite)) {
       iUp = setInterval(() => {
         if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
-        else playerY += 10;
+        else {
+          playerY += 5;
+        }
       }, 10);
-    } else playerY += 10;
+    } else playerY += 7;
   };
   const executeMoveLeft = () => {
     if (playerX >= 5 && !colliderCollision(player.Sprite)) {
       iLeft = setInterval(() => {
         if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
-        else playerX += 10;
+        else playerX += 5;
       }, 10);
-    } else playerX += 10;
+    } else playerX += 7;
   };
   const executeMoveRight = () => {
     if (playerX <= app.screen.width && !colliderCollision(player.Sprite)) {
       iRight = setInterval(() => {
         if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
           playerX += 1;
-        else playerX -= 10;
+        else playerX -= 5;
       }, 10);
-    } else playerX -= 10;
+    } else playerX -= 7;
   };
   const executeMoveDown = () => {
     if (playerY <= app.screen.height && !colliderCollision(player.Sprite)) {
       iDown = setInterval(() => {
         if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
           playerY += 1;
-        else playerY -= 10;
+        else playerY -= 5;
       }, 10);
-    } else playerY -= 10;
+    } else playerY -= 7;
   };
 
   useEffect(() => {
@@ -505,27 +505,27 @@ const Game = () => {
 
     // dungeon
     const dungeon = dungeoneer.build({
-      width: 500,
-      height: 500,
+      width: 20 * 35,
+      height: 20 * 35,
       seed,
     });
     // app.stage.addChild(sprite);
     const tiles = dungeon.tiles;
-    for (let i = 0; i < 500 / 32; ++i) {
-      for (let j = 0; j < 500 / 32; ++j) {
-        if (tiles[i][j].type === "wall") {
+    for (let i = 0; i < app.screen.height / 35; ++i) {
+      for (let j = 0; j < app.screen.width / 35; ++j) {
+        if (tiles[i][j].type === "wall" || tiles[i][j].type === "door") {
           const wall = new PIXI.Sprite.from(dirt);
-          wall.width = 32;
-          wall.height = 32;
-          wall.x = tiles[i][j].x * 32;
-          wall.y = tiles[i][j].y * 32;
+          wall.width = 35;
+          wall.height = 35;
+          wall.x = tiles[i][j].x * 35;
+          wall.y = tiles[i][j].y * 35;
           app.stage.addChild(wall);
         } else {
           const wall = new PIXI.Sprite.from(crate);
-          wall.width = 32;
-          wall.height = 32;
-          wall.x = tiles[i][j].x * 32;
-          wall.y = tiles[i][j].y * 32;
+          wall.width = 35;
+          wall.height = 35;
+          wall.x = tiles[i][j].x * 35;
+          wall.y = tiles[i][j].y * 35;
           app.stage.addChild(wall);
           allColliders.push(new Collider({ name: "wall" }, wall));
           allWalls.push(new Collider({ name: "wall" }, wall));
@@ -677,10 +677,10 @@ const Game = () => {
       let xss = false;
       // going by left || going by right
       if (
-        (sprite.x + sprite.width >= currentSprite.x &&
+        (sprite.x + sprite.width >= currentSprite.x + 2 &&
           sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
         (sprite.x >= currentSprite.x &&
-          sprite.x <= currentSprite.x + currentSprite.width)
+          sprite.x <= currentSprite.x + currentSprite.width - 2)
       ) {
         xss = true;
       }
@@ -689,8 +689,8 @@ const Game = () => {
         // down collision || up collision
         if (
           (sprite.y >= currentSprite.y &&
-            sprite.y <= currentSprite.y + currentSprite.height) ||
-          (sprite.y + sprite.height >= currentSprite.y &&
+            sprite.y <= currentSprite.y + currentSprite.height - 2) ||
+          (sprite.y + sprite.height >= currentSprite.y + 2 &&
             sprite.y + sprite.height <= currentSprite.y + currentSprite.height)
         ) {
           return true;
