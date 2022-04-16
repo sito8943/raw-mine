@@ -6,10 +6,11 @@ import * as PIXI from "pixi.js";
 import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
 
+// sprites
 import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
-import enemyIMG from "../../assets/images/674.png";
 import spark from "../../assets/images/spark.gif";
+import wall from "../../assets/images/wall.png";
 
 // utils
 import app from "../../utils/app";
@@ -75,7 +76,7 @@ let allColliders = [
     {
       name: "Sito",
       life: { max: 15, current: 15 },
-      weapon: new Weapon(WeaponsEnum[4]),
+      weapon: new Weapon(WeaponsEnum[0]),
     },
     character
   ),
@@ -83,6 +84,7 @@ let allColliders = [
   new Enemy(EnemiesEnum[0], enemy1),
   new Enemy(EnemiesEnum[0], enemy2),
 ];
+let walls = [];
 
 const player = allColliders[0];
 
