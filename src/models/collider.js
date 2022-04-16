@@ -1,7 +1,12 @@
 export default class Collider {
-  constructor(options = { name: "" }) {
+  constructor(options = { name: "" }, sprite) {
     const { name } = options;
     this.name = name;
+    this.sprite = sprite;
+  }
+
+  IsPlayer() {
+    return false;
   }
 
   IsCollider() {
@@ -16,7 +21,15 @@ export default class Collider {
     return this.name;
   }
 
+  get Sprite() {
+    return this.sprite;
+  }
+
   set Name(newName) {
     this.name = newName;
+  }
+
+  set Sprite(newSprite) {
+    this.sprite = newSprite;
   }
 }

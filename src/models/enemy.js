@@ -75,6 +75,14 @@ export default class Enemy {
     return false;
   }
 
+  IsCollider() {
+    return false;
+  }
+
+  IsPlayer() {
+    return false;
+  }
+
   IsAlive() {
     if (this.life.current > 0) return true;
     return false;

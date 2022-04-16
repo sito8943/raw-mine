@@ -25,6 +25,10 @@ export default class Player {
     this.sprite = sprite;
   }
 
+  IsCollider() {
+    return false;
+  }
+
   IsPlayer() {
     return true;
   }

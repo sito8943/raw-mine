@@ -10,7 +10,7 @@ import { useAudioConfig } from "../../context/AudioConfig";
 import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
 import spark from "../../assets/images/spark.gif";
-import wall from "../../assets/images/crates.png";
+import crate from "../../assets/images/crates.png";
 
 // utils
 import app from "../../utils/app";
@@ -35,9 +35,14 @@ sprite.interactive = true;
 
 // character
 const character = new PIXI.Sprite.from(characterImg);
+// test enemies
 const enemy = new PIXI.Sprite.from(characterImg);
 const enemy1 = new PIXI.Sprite.from(characterImg);
 const enemy2 = new PIXI.Sprite.from(characterImg);
+// test crates
+const wall = new PIXI.Sprite.from(crate);
+const wall1 = new PIXI.Sprite.from(crate);
+const wall2 = new PIXI.Sprite.from(crate);
 
 character.width = 60;
 character.height = 60;
@@ -85,8 +90,13 @@ let allColliders = [
   new Enemy(EnemiesEnum[0], enemy1),
   new Enemy(EnemiesEnum[0], enemy2),
   new Collider({ name: "Caja" }, wall),
+  new Collider({ name: "Caja" }, wall1),
+  new Collider({ name: "Caja" }, wall2),
+];
+let allWalls = [
   new Collider({ name: "Caja" }, wall),
-  new Collider({ name: "Caja" }, wall),
+  new Collider({ name: "Caja" }, wall1),
+  new Collider({ name: "Caja" }, wall2),
 ];
 
 const player = allColliders[0];
@@ -216,6 +226,7 @@ const Game = () => {
     }
   };
 
+  // fire execution
   const executeFireUp = () => {
     if (!onReload) {
       setAudioControllerState({ type: "shot" });
@@ -453,24 +464,35 @@ const Game = () => {
     }, player.Weapon.Reload);
   };
 
+  // move execution
   const executeMoveUp = () => {
+    let localY = playerY;
     iUp = setInterval(() => {
-      if (playerY >= 5) playerY -= 1;
+      if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
+      else playerY += 1;
     }, 10);
   };
   const executeMoveLeft = () => {
+    let localX = playerX;
     iLeft = setInterval(() => {
-      if (playerX >= 5) playerX -= 1;
+      if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
+      else playerX += 1;
     }, 10);
   };
   const executeMoveRight = () => {
+    let localX = playerX;
     iRight = setInterval(() => {
-      if (playerX <= app.screen.width) playerX += 1;
+      if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
+        playerX += 1;
+      else playerX -= 1;
     }, 10);
   };
   const executeMoveDown = () => {
+    let localY = playerY;
     iDown = setInterval(() => {
-      if (playerY <= app.screen.height) playerY += 1;
+      if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
+        playerY += 1;
+      else playerY -= 1;
     }, 10);
   };
 
@@ -484,9 +506,16 @@ const Game = () => {
 
     sprite.on("pointerdown", onClick);
     app.stage.addChild(sprite);
+
+    // test enemies
     app.stage.addChild(enemy);
     app.stage.addChild(enemy1);
     app.stage.addChild(enemy2);
+
+    // test crates
+    app.stage.addChild(wall);
+    app.stage.addChild(wall1);
+    app.stage.addChild(wall2);
 
     playerX = app.screen.width / 2;
     playerY = app.screen.height / 2;
@@ -500,6 +529,14 @@ const Game = () => {
     enemy1.y = 400;
     enemy2.x = 600;
     enemy2.y = 400;
+
+    wall.x = 130;
+    wall.y = 170;
+    wall1.x = 400;
+    wall1.y = 80;
+    wall2.x = 370;
+    wall2.y = 600;
+
     app.ticker.add((delta) => {
       character.x = playerX;
       character.y = playerY;
@@ -620,6 +657,34 @@ const Game = () => {
     }
   };
 
+  const colliderCollision = (sprite) => {
+    for (let i = 0; i < allWalls.length; ++i) {
+      const currentSprite = allWalls[i].Sprite;
+      let xss = false;
+      // going by left || going by right
+      if (
+        (sprite.x + sprite.width >= currentSprite.x &&
+          sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
+        (sprite.x >= currentSprite.x &&
+          sprite.x <= currentSprite.x + currentSprite.width)
+      ) {
+        xss = true;
+      }
+
+      if (xss) {
+        // down collision || up collision
+        if (
+          (sprite.y >= currentSprite.y &&
+            sprite.y <= currentSprite.y + currentSprite.height) ||
+          (sprite.y + sprite.height >= currentSprite.y &&
+            sprite.y + sprite.height <= currentSprite.y + currentSprite.height)
+        ) {
+          return true;
+        }
+      }
+    }
+  };
+
   const projectileCollision = (sprite) => {
     for (let i = 0; i < allColliders.length; ++i) {
       if (allColliders[i].IsPlayer() || !allColliders[i].IsAlive()) continue;
@@ -644,10 +709,11 @@ const Game = () => {
             sprite.y + sprite.height <= currentSprite.y + currentSprite.height)
         ) {
           if (!allColliders[i].IsCollider()) {
-          } else {
             setAudioControllerState({ type: "enemyHit" });
             if (allColliders[i].TakeDamage(player.Weapon.Damage))
               app.stage.removeChild(currentSprite);
+          } else {
+            console.log(allColliders[i].IsCollider());
           }
           return true;
         }
