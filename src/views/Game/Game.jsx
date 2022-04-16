@@ -2,8 +2,13 @@ import { useEffect, useState, useRef } from "react";
 
 import * as PIXI from "pixi.js";
 
+// context
+import { useAudioController } from "../../context/AudioController";
+import { useAudioConfig } from "../../context/AudioConfig";
+
 import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
+import enemyIMG from "../../assets/images/674.png";
 import spark from "../../assets/images/spark.gif";
 
 // utils
@@ -12,6 +17,7 @@ import app from "../../utils/app";
 // models
 import Weapon, { WeaponsEnum } from "../../models/weapon";
 import Player from "../../models/player";
+import Enemy, { EnemiesEnum } from "../../models/enemy";
 
 // styles
 import "./style.css";
@@ -27,9 +33,12 @@ sprite.interactive = true;
 
 // character
 const character = new PIXI.Sprite.from(characterImg);
+const enemy = new PIXI.Sprite.from(characterImg);
 
 character.width = 60;
 character.height = 60;
+enemy.width = 60;
+enemy.height = 60;
 
 let mouseX = 0;
 let mouseY = 0;
@@ -54,19 +63,87 @@ let fUp = null;
 // fire intervals
 let fires = [];
 
-const player = new Player({
-  name: "Sito",
-  life: { max: 20, current: 20 },
-  weapon: new Weapon(WeaponsEnum[4]),
-});
+// all colliders
+let allColliders = [
+  new Player(
+    {
+      name: "Sito",
+      life: { max: 15, current: 15 },
+      weapon: new Weapon(WeaponsEnum[3]),
+    },
+    character
+  ),
+  new Enemy(EnemiesEnum[0], enemy),
+];
+
+const player = allColliders[0];
+
+let onReload = false;
 
 const Game = () => {
   const ref = useRef(null);
+
+  const { useConfigState, setAudioConfigState } = useAudioConfig();
+  const { setAudioControllerState } = useAudioController();
+
   const [mousePosition, setMousePosition] = useState();
   const [w, setW] = useState(false);
+  const [attackSpeed, setAttackSpeed] = useState(player.Weapon.Reload);
+
+  useEffect(() => {
+    if (onReload)
+      setTimeout(() => {
+        onReload = false;
+        setAudioControllerState({ type: "reloaded" });
+      }, [attackSpeed]);
+  }, [onReload]);
+
+  useEffect(() => {
+    if (!w) clearInterval(iUp);
+    else {
+      executeMoveUp();
+      clearInterval(iRight);
+      clearInterval(iDown);
+      clearInterval(iLeft);
+    }
+  }, [w]);
+
   const [a, setA] = useState(false);
+
+  useEffect(() => {
+    if (!a) clearInterval(iLeft);
+    else {
+      executeMoveLeft();
+      clearInterval(iRight);
+      clearInterval(iDown);
+      clearInterval(iUp);
+    }
+  }, [a]);
+
   const [d, setD] = useState(false);
+
+  useEffect(() => {
+    if (!d) clearInterval(iRight);
+    else {
+      executeMoveRight();
+      clearInterval(iUp);
+      clearInterval(iDown);
+      clearInterval(iLeft);
+    }
+  }, [d]);
+
   const [s, setS] = useState(false);
+
+  useEffect(() => {
+    if (!s) clearInterval(iDown);
+    else {
+      executeMoveDown();
+      clearInterval(iRight);
+      clearInterval(iUp);
+      clearInterval(iLeft);
+    }
+  }, [s]);
+
   const [up, setUp] = useState(false);
 
   useEffect(() => {
@@ -115,14 +192,6 @@ const Game = () => {
     }
   }, [down]);
 
-  const activate = (which) => {
-    switch (which) {
-      default: // fire up
-        iUp = setInterval(() => {}, []);
-        break;
-    }
-  };
-
   const onClick = (e) => {
     const { global, button } = e.data;
     mouseX = global.x;
@@ -135,31 +204,37 @@ const Game = () => {
   };
 
   const executeFireUp = () => {
-    sparkCount += 1;
-    const newLength = sparkCount;
-    sparks[newLength] = new PIXI.Sprite.from(spark);
-    sparkXs[newLength] = playerX + 30;
-    sparkYs[newLength] = playerY + 30;
-    app.stage.addChild(sparks[newLength]);
+    if (!onReload) {
+      setAudioControllerState({ type: "shot" });
+      onReload = true;
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
 
-    app.ticker.add((delta) => {
-      sparks[newLength].x = sparkXs[newLength];
-      sparks[newLength].y = sparkYs[newLength];
-    });
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
 
-    const index = fires.length;
-    let newI = setInterval(() => {
-      sparkYs[newLength] -= player.Weapon.Speed;
-      if (sparkYs[newLength] < -10) {
-        clearInterval(fires[index]);
-        app.stage.removeChild(sparks[newLength]);
-      }
-    }, 1);
-    fires.push(newI);
+      const index = fires.length;
+      let newI = setInterval(() => {
+        sparkYs[newLength] -= player.Weapon.Speed;
+        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
+      }, 1);
+      fires.push(newI);
+    } else setAudioControllerState({ type: "reloading" });
 
     // reload and fire
     fUp = setInterval(() => {
       sparkCount += 1;
+      setAudioControllerState({ type: "shot" });
+      onReload = true;
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
       sparkXs[newLength] = playerX + 30;
@@ -173,41 +248,49 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkYs[newLength] -= player.Weapon.Speed;
-        if (sparkYs[newLength] < -10) {
+        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
       }, 1);
       fires.push(newI);
-    }, player.Weapon.Reload);
+    }, player.Weapon.Reload + 150);
   };
 
   const executeFireRight = () => {
-    sparkCount += 1;
-    const newLength = sparkCount;
-    sparks[newLength] = new PIXI.Sprite.from(spark);
-    sparkXs[newLength] = playerX + 30;
-    sparkYs[newLength] = playerY + 30;
-    app.stage.addChild(sparks[newLength]);
+    if (!onReload) {
+      setAudioControllerState({ type: "shot" });
+      onReload = true;
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
 
-    app.ticker.add((delta) => {
-      sparks[newLength].x = sparkXs[newLength];
-      sparks[newLength].y = sparkYs[newLength];
-    });
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
 
-    const index = fires.length;
-    let newI = setInterval(() => {
-      sparkXs[newLength] += player.Weapon.Speed;
-      if (sparkXs[newLength] > app.screen.width) {
-        clearInterval(fires[index]);
-        app.stage.removeChild(sparks[newLength]);
-      }
-    }, 1);
-    fires.push(newI);
+      const index = fires.length;
+      let newI = setInterval(() => {
+        sparkXs[newLength] += player.Weapon.Speed;
+        if (
+          sparkXs[newLength] > app.screen.width ||
+          hasCollisions(sparks[newLength])
+        ) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
+      }, 1);
+      fires.push(newI);
+    } else setAudioControllerState({ type: "reloading" });
 
     // reload and fire
     fRight = setInterval(() => {
       sparkCount += 1;
+      setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
       sparkXs[newLength] = playerX + 30;
@@ -221,7 +304,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkXs[newLength] += player.Weapon.Speed;
-        if (sparkXs[newLength] > app.screen.width) {
+        if (
+          sparkXs[newLength] > app.screen.width ||
+          hasCollisions(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -231,31 +317,39 @@ const Game = () => {
   };
 
   const executeFireDown = () => {
-    sparkCount += 1;
-    const newLength = sparkCount;
-    sparks[newLength] = new PIXI.Sprite.from(spark);
-    sparkXs[newLength] = playerX + 30;
-    sparkYs[newLength] = playerY + 30;
-    app.stage.addChild(sparks[newLength]);
+    if (!onReload) {
+      setAudioControllerState({ type: "shot" });
+      onReload = true;
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
 
-    app.ticker.add((delta) => {
-      sparks[newLength].x = sparkXs[newLength];
-      sparks[newLength].y = sparkYs[newLength];
-    });
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
 
-    const index = fires.length;
-    let newI = setInterval(() => {
-      sparkYs[newLength] += player.Weapon.Speed;
-      if (sparkYs[newLength] > app.screen.height) {
-        clearInterval(fires[index]);
-        app.stage.removeChild(sparks[newLength]);
-      }
-    }, 1);
-    fires.push(newI);
+      const index = fires.length;
+      let newI = setInterval(() => {
+        sparkYs[newLength] += player.Weapon.Speed;
+        if (
+          sparkYs[newLength] > app.screen.height ||
+          hasCollisions(sparks[newLength])
+        ) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
+      }, 1);
+      fires.push(newI);
+    } else setAudioControllerState({ type: "reloading" });
 
     // reload and fire
     fDown = setInterval(() => {
       sparkCount += 1;
+      setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
       sparkXs[newLength] = playerX + 30;
@@ -269,7 +363,7 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkYs[newLength] += player.Weapon.Speed;
-        if (sparkYs[newLength] < -10) {
+        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -279,31 +373,36 @@ const Game = () => {
   };
 
   const executeFireLeft = () => {
-    sparkCount += 1;
-    const newLength = sparkCount;
-    sparks[newLength] = new PIXI.Sprite.from(spark);
-    sparkXs[newLength] = playerX + 30;
-    sparkYs[newLength] = playerY + 30;
-    app.stage.addChild(sparks[newLength]);
+    if (!onReload) {
+      setAudioControllerState({ type: "shot" });
+      onReload = true;
+      sparkCount += 1;
+      const newLength = sparkCount;
+      sparks[newLength] = new PIXI.Sprite.from(spark);
+      sparkXs[newLength] = playerX + 30;
+      sparkYs[newLength] = playerY + 30;
+      app.stage.addChild(sparks[newLength]);
 
-    app.ticker.add((delta) => {
-      sparks[newLength].x = sparkXs[newLength];
-      sparks[newLength].y = sparkYs[newLength];
-    });
+      app.ticker.add((delta) => {
+        sparks[newLength].x = sparkXs[newLength];
+        sparks[newLength].y = sparkYs[newLength];
+      });
 
-    const index = fires.length;
-    let newI = setInterval(() => {
-      sparkXs[newLength] -= player.Weapon.Speed;
-      if (sparkXs[newLength] < -10) {
-        clearInterval(fires[index]);
-        app.stage.removeChild(sparks[newLength]);
-      }
-    }, 1);
-    fires.push(newI);
+      const index = fires.length;
+      let newI = setInterval(() => {
+        sparkXs[newLength] -= player.Weapon.Speed;
+        if (sparkXs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+          clearInterval(fires[index]);
+          app.stage.removeChild(sparks[newLength]);
+        }
+      }, 1);
+      fires.push(newI);
+    } else setAudioControllerState({ type: "reloading" });
 
     // reload and fire
     fLeft = setInterval(() => {
       sparkCount += 1;
+      setAudioControllerState({ type: "shot" });
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
       sparkXs[newLength] = playerX + 30;
@@ -317,7 +416,7 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkXs[newLength] -= player.Weapon.Speed;
-        if (sparkXs[newLength] < -10) {
+        if (sparkXs[newLength] < -10 || hasCollisions(sparks[newLength])) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -326,9 +425,25 @@ const Game = () => {
     }, player.Weapon.Reload);
   };
 
-  const init = (delta) => {
-    character.x = playerX;
-    character.y = playerY;
+  const executeMoveUp = () => {
+    iUp = setInterval(() => {
+      if (playerY >= 5) playerY -= 1;
+    }, 10);
+  };
+  const executeMoveLeft = () => {
+    iLeft = setInterval(() => {
+      if (playerX >= 5) playerX -= 1;
+    }, 10);
+  };
+  const executeMoveRight = () => {
+    iRight = setInterval(() => {
+      if (playerX <= app.screen.width) playerX += 1;
+    }, 10);
+  };
+  const executeMoveDown = () => {
+    iDown = setInterval(() => {
+      if (playerY <= app.screen.height) playerY += 1;
+    }, 10);
   };
 
   useEffect(() => {
@@ -341,13 +456,23 @@ const Game = () => {
 
     sprite.on("pointerdown", onClick);
     app.stage.addChild(sprite);
+    app.stage.addChild(enemy);
 
     playerX = app.screen.width / 2;
     playerY = app.screen.height / 2;
 
-    app.stage.addChild(character);
+    character.x = playerX;
+    character.y = playerY;
 
-    app.ticker.add(init);
+    enemy.x = 200;
+    enemy.y = 200;
+
+    app.ticker.add((delta) => {
+      character.x = playerX;
+      character.y = playerY;
+    });
+
+    app.stage.addChild(character);
 
     return () => {
       // On unload stop the application
@@ -388,22 +513,18 @@ const Game = () => {
     switch (key) {
       case "w":
       case "W":
-        playerY -= 5;
         setW(true);
         break;
       case "d":
       case "D":
-        playerX += 5;
         setD(true);
         break;
       case "s":
       case "S":
-        playerY += 5;
         setS(true);
         break;
       case "a":
       case "A":
-        playerX -= 5;
         setA(true);
         break;
       case "ArrowUp":
@@ -431,16 +552,59 @@ const Game = () => {
       case "fdown":
         return executeFireDown();
       case "up":
-        playerY -= 5;
+        playerY -= 1;
         break;
       case "right":
-        playerX += 5;
+        playerX += 1;
         break;
       case "down":
-        playerY += 5;
+        playerY += 1;
         break;
       default: //left
-        playerX -= 5;
+        playerX -= 1;
+    }
+  };
+
+  const hasCollisions = (sprite) => {
+    for (let i = 0; i < allColliders.length; ++i) {
+      if (allColliders[i].Name === "Sito") continue;
+      if (!allColliders[i].IsAlive()) continue;
+      const currentSprite = allColliders[i].Sprite;
+      let xss = false;
+      // going by left
+      if (
+        sprite.x + sprite.width >= currentSprite.x &&
+        sprite.x + sprite.width <= currentSprite.x + currentSprite.width
+      ) {
+        xss = true;
+      }
+      // going by right
+      else if (
+        sprite.x >= currentSprite.x &&
+        sprite.x <= currentSprite.x + currentSprite.width
+      ) {
+        xss = true;
+      }
+      if (xss) {
+        // down collision
+        if (
+          sprite.y >= currentSprite.y &&
+          sprite.y <= currentSprite.y + currentSprite.height
+        ) {
+          if (allColliders[i].TakeDamage(player.Weapon.Damage))
+            app.stage.removeChild(currentSprite);
+          return true;
+        }
+        // up collision
+        else if (
+          sprite.y + sprite.height >= currentSprite.y &&
+          sprite.y + sprite.height <= currentSprite.y + currentSprite.height
+        ) {
+          if (allColliders[i].TakeDamage(player.Weapon.Damage))
+            app.stage.removeChild(currentSprite);
+          return true;
+        }
+      }
     }
   };
 

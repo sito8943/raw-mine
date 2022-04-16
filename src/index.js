@@ -4,6 +4,10 @@ import * as ReactDOMClient from "react-dom/client";
 // app
 import App from "./App";
 
+// context
+import { AudioConfigProvider } from "./context/AudioConfig";
+import { AudioControllerProvider } from "./context/AudioController";
+
 // style
 import "./index.css";
 
@@ -15,6 +19,10 @@ const root = ReactDOMClient.createRoot(container);
 // Initial render: Render an element to the root.
 root.render(
   <StrictMode>
-    <App />
+    <AudioConfigProvider>
+      <AudioControllerProvider>
+        <App />
+      </AudioControllerProvider>
+    </AudioConfigProvider>
   </StrictMode>
 );

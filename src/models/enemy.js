@@ -24,7 +24,7 @@ export const EnemiesEnum = [
     damage: 3,
   },
   {
-    name: "Escarabajo pistolero",
+    name: "Escarabajo Molesto",
     life: { max: 15 },
     damage: 3,
   },
@@ -61,11 +61,23 @@ export const EnemiesEnum = [
 ];
 
 export default class Enemy {
-  constructor(options = { name: "", life: { max: 0, current: 0 }, damage: 0 }) {
+  constructor(options = { name: "", life: { max: 0 }, damage: 0 }, sprite) {
     const { name, life, damage } = options;
     this.name = name;
-    this.life = { max: life.max, current: life.current };
+    this.life = { max: life.max, current: life.max };
     this.damage = damage;
+    this.sprite = sprite;
+  }
+
+  TakeDamage(damage) {
+    this.life.current -= damage;
+    if (this.life.current <= 0) return true;
+    return false;
+  }
+
+  IsAlive() {
+    if (this.life.current > 0) return true;
+    return false;
   }
 
   get Name() {
@@ -76,11 +88,19 @@ export default class Enemy {
     return this.life;
   }
 
+  get Sprite() {
+    return this.sprite;
+  }
+
   set Life(newLife) {
     this.life = newLife;
   }
 
   set Name(newName) {
     this.name = newName;
+  }
+
+  set Sprite(newSprite) {
+    this.sprite = newSprite;
   }
 }
