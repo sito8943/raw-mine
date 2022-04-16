@@ -466,7 +466,6 @@ const Game = () => {
 
   // move execution
   const executeMoveUp = () => {
-    let localY = playerY;
     if (playerY >= 5 && !colliderCollision(player.Sprite)) {
       iUp = setInterval(() => {
         if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
@@ -475,7 +474,6 @@ const Game = () => {
     } else playerY += 10;
   };
   const executeMoveLeft = () => {
-    let localX = playerX;
     if (playerX >= 5 && !colliderCollision(player.Sprite)) {
       iLeft = setInterval(() => {
         if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
@@ -484,7 +482,6 @@ const Game = () => {
     } else playerX += 10;
   };
   const executeMoveRight = () => {
-    let localX = playerX;
     if (playerX <= app.screen.width && !colliderCollision(player.Sprite)) {
       iRight = setInterval(() => {
         if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
@@ -494,7 +491,6 @@ const Game = () => {
     } else playerX -= 10;
   };
   const executeMoveDown = () => {
-    let localY = playerY;
     if (playerY <= app.screen.height && !colliderCollision(player.Sprite)) {
       iDown = setInterval(() => {
         if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
@@ -721,7 +717,7 @@ const Game = () => {
             if (allColliders[i].TakeDamage(player.Weapon.Damage))
               app.stage.removeChild(currentSprite);
           } else {
-            console.log(allColliders[i].IsCollider());
+            setAudioControllerState({ type: "wallHit" });
           }
           return true;
         }

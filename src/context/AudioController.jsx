@@ -5,6 +5,15 @@ const AudioController = React.createContext();
 const audioControllerReducer = (audioControllerState, action) => {
   console.log(action);
   switch (action.type) {
+    case "wallHit": {
+      let newWallHit = 0;
+      if (audioControllerState.shot === 1) newWallHit = 2;
+      else newWallHit = 1;
+      return {
+        ...audioControllerState,
+        wallHit: newWallHit,
+      };
+    }
     case "enemyHit": {
       let newEnemyHit = 0;
       if (audioControllerState.shot === 1) newEnemyHit = 2;
