@@ -467,33 +467,41 @@ const Game = () => {
   // move execution
   const executeMoveUp = () => {
     let localY = playerY;
-    iUp = setInterval(() => {
-      if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
-      else playerY += 1;
-    }, 10);
+    if (playerY >= 5 && !colliderCollision(player.Sprite)) {
+      iUp = setInterval(() => {
+        if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
+        else playerY += 10;
+      }, 10);
+    } else playerY += 10;
   };
   const executeMoveLeft = () => {
     let localX = playerX;
-    iLeft = setInterval(() => {
-      if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
-      else playerX += 1;
-    }, 10);
+    if (playerX >= 5 && !colliderCollision(player.Sprite)) {
+      iLeft = setInterval(() => {
+        if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
+        else playerX += 10;
+      }, 10);
+    } else playerX += 10;
   };
   const executeMoveRight = () => {
     let localX = playerX;
-    iRight = setInterval(() => {
-      if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
-        playerX += 1;
-      else playerX -= 1;
-    }, 10);
+    if (playerX <= app.screen.width && !colliderCollision(player.Sprite)) {
+      iRight = setInterval(() => {
+        if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
+          playerX += 1;
+        else playerX -= 10;
+      }, 10);
+    } else playerX -= 10;
   };
   const executeMoveDown = () => {
     let localY = playerY;
-    iDown = setInterval(() => {
-      if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
-        playerY += 1;
-      else playerY -= 1;
-    }, 10);
+    if (playerY <= app.screen.height && !colliderCollision(player.Sprite)) {
+      iDown = setInterval(() => {
+        if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
+          playerY += 1;
+        else playerY -= 10;
+      }, 10);
+    } else playerY -= 10;
   };
 
   useEffect(() => {
