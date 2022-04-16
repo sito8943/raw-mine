@@ -275,7 +275,7 @@ const Game = () => {
         }
       }, 1);
       fires.push(newI);
-    }, player.Weapon.Reload + 150);
+    }, player.Weapon.Reload);
   };
 
   const executeFireRight = () => {
