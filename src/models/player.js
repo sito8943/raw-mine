@@ -25,6 +25,15 @@ export default class Player {
     this.sprite = sprite;
   }
 
+  IsPlayer() {
+    return true;
+  }
+
+  IsAlive() {
+    if (this.life.current > 0) return true;
+    return false;
+  }
+
   get Name() {
     return this.name;
   }

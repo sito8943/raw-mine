@@ -10,7 +10,7 @@ import { useAudioConfig } from "../../context/AudioConfig";
 import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
 import spark from "../../assets/images/spark.gif";
-import wall from "../../assets/images/wall.png";
+import wall from "../../assets/images/crates.png";
 
 // utils
 import app from "../../utils/app";
@@ -19,6 +19,7 @@ import app from "../../utils/app";
 import Weapon, { WeaponsEnum } from "../../models/weapon";
 import Player from "../../models/player";
 import Enemy, { EnemiesEnum } from "../../models/enemy";
+import Collider from "../../models/collider";
 
 // styles
 import "./style.css";
@@ -83,8 +84,10 @@ let allColliders = [
   new Enemy(EnemiesEnum[0], enemy),
   new Enemy(EnemiesEnum[0], enemy1),
   new Enemy(EnemiesEnum[0], enemy2),
+  new Collider({ name: "Caja" }, wall),
+  new Collider({ name: "Caja" }, wall),
+  new Collider({ name: "Caja" }, wall),
 ];
-let walls = [];
 
 const player = allColliders[0];
 
@@ -232,7 +235,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkYs[newLength] -= player.Weapon.Speed;
-        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+        if (
+          sparkYs[newLength] < -10 ||
+          projectileCollision(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -258,7 +264,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkYs[newLength] -= player.Weapon.Speed;
-        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+        if (
+          sparkYs[newLength] < -10 ||
+          projectileCollision(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -288,7 +297,7 @@ const Game = () => {
         sparkXs[newLength] += player.Weapon.Speed;
         if (
           sparkXs[newLength] > app.screen.width ||
-          hasCollisions(sparks[newLength])
+          projectileCollision(sparks[newLength])
         ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
@@ -316,7 +325,7 @@ const Game = () => {
         sparkXs[newLength] += player.Weapon.Speed;
         if (
           sparkXs[newLength] > app.screen.width ||
-          hasCollisions(sparks[newLength])
+          projectileCollision(sparks[newLength])
         ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
@@ -347,7 +356,7 @@ const Game = () => {
         sparkYs[newLength] += player.Weapon.Speed;
         if (
           sparkYs[newLength] > app.screen.height ||
-          hasCollisions(sparks[newLength])
+          projectileCollision(sparks[newLength])
         ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
@@ -373,7 +382,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkYs[newLength] += player.Weapon.Speed;
-        if (sparkYs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+        if (
+          sparkYs[newLength] < -10 ||
+          projectileCollision(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -401,7 +413,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkXs[newLength] -= player.Weapon.Speed;
-        if (sparkXs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+        if (
+          sparkXs[newLength] < -10 ||
+          projectileCollision(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -426,7 +441,10 @@ const Game = () => {
       const index = fires.length;
       let newI = setInterval(() => {
         sparkXs[newLength] -= player.Weapon.Speed;
-        if (sparkXs[newLength] < -10 || hasCollisions(sparks[newLength])) {
+        if (
+          sparkXs[newLength] < -10 ||
+          projectileCollision(sparks[newLength])
+        ) {
           clearInterval(fires[index]);
           app.stage.removeChild(sparks[newLength]);
         }
@@ -602,45 +620,35 @@ const Game = () => {
     }
   };
 
-  const hasCollisions = (sprite) => {
+  const projectileCollision = (sprite) => {
     for (let i = 0; i < allColliders.length; ++i) {
-      if (allColliders[i].Name === "Sito") continue;
-      if (!allColliders[i].IsAlive()) continue;
+      if (allColliders[i].IsPlayer() || !allColliders[i].IsAlive()) continue;
       const currentSprite = allColliders[i].Sprite;
       let xss = false;
-      // going by left
+      // going by left || going by right
       if (
-        sprite.x + sprite.width >= currentSprite.x &&
-        sprite.x + sprite.width <= currentSprite.x + currentSprite.width
+        (sprite.x + sprite.width >= currentSprite.x &&
+          sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
+        (sprite.x >= currentSprite.x &&
+          sprite.x <= currentSprite.x + currentSprite.width)
       ) {
         xss = true;
       }
-      // going by right
-      else if (
-        sprite.x >= currentSprite.x &&
-        sprite.x <= currentSprite.x + currentSprite.width
-      ) {
-        xss = true;
-      }
+
       if (xss) {
-        // down collision
+        // down collision || up collision
         if (
-          sprite.y >= currentSprite.y &&
-          sprite.y <= currentSprite.y + currentSprite.height
+          (sprite.y >= currentSprite.y &&
+            sprite.y <= currentSprite.y + currentSprite.height) ||
+          (sprite.y + sprite.height >= currentSprite.y &&
+            sprite.y + sprite.height <= currentSprite.y + currentSprite.height)
         ) {
-          setAudioControllerState({ type: "enemyHit" });
-          if (allColliders[i].TakeDamage(player.Weapon.Damage))
-            app.stage.removeChild(currentSprite);
-          return true;
-        }
-        // up collision
-        else if (
-          sprite.y + sprite.height >= currentSprite.y &&
-          sprite.y + sprite.height <= currentSprite.y + currentSprite.height
-        ) {
-          setAudioControllerState({ type: "enemyHit" });
-          if (allColliders[i].TakeDamage(player.Weapon.Damage))
-            app.stage.removeChild(currentSprite);
+          if (!allColliders[i].IsCollider()) {
+          } else {
+            setAudioControllerState({ type: "enemyHit" });
+            if (allColliders[i].TakeDamage(player.Weapon.Damage))
+              app.stage.removeChild(currentSprite);
+          }
           return true;
         }
       }
