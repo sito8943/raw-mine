@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import dungeoneer from "dungeoneer";
 
 import * as PIXI from "pixi.js";
 
@@ -7,10 +8,11 @@ import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
 
 // sprites
-import back from "../../assets/images/back.png";
+// import back from "../../assets/images/back.png";
 import characterImg from "../../assets/images/character.png";
 import spark from "../../assets/images/spark.gif";
 import crate from "../../assets/images/crates.png";
+import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.png";
 
 // utils
 import app from "../../utils/app";
@@ -27,25 +29,15 @@ import "./style.css";
 let playerX = 0;
 let playerY = 0;
 
-// back
-const sprite = new PIXI.Sprite.from(back);
-sprite.width = app.screen.width;
-sprite.height = app.screen.height;
-sprite.interactive = true;
-
 // character
 const character = new PIXI.Sprite.from(characterImg);
 // test enemies
 const enemy = new PIXI.Sprite.from(characterImg);
 const enemy1 = new PIXI.Sprite.from(characterImg);
 const enemy2 = new PIXI.Sprite.from(characterImg);
-// test crates
-const wall = new PIXI.Sprite.from(crate);
-const wall1 = new PIXI.Sprite.from(crate);
-const wall2 = new PIXI.Sprite.from(crate);
 
-character.width = 60;
-character.height = 60;
+character.width = 25;
+character.height = 25;
 enemy.width = 60;
 enemy.height = 60;
 enemy1.width = 60;
@@ -89,19 +81,20 @@ let allColliders = [
   new Enemy(EnemiesEnum[0], enemy),
   new Enemy(EnemiesEnum[0], enemy1),
   new Enemy(EnemiesEnum[0], enemy2),
-  new Collider({ name: "Caja" }, wall),
-  new Collider({ name: "Caja" }, wall1),
-  new Collider({ name: "Caja" }, wall2),
 ];
-let allWalls = [
-  new Collider({ name: "Caja" }, wall),
-  new Collider({ name: "Caja" }, wall1),
-  new Collider({ name: "Caja" }, wall2),
-];
+let allWalls = [];
 
 const player = allColliders[0];
 
 let onReload = false;
+
+const seed = new Date().getTime();
+
+/*const DungeonA = {
+  rooms: [],
+  tiles: Array<[]>,
+  seed: seed,
+};*/
 
 const Game = () => {
   const ref = useRef(null);
@@ -234,8 +227,8 @@ const Game = () => {
       sparkCount += 1;
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparkXs[newLength] = playerX + 20;
+      sparkYs[newLength] = playerY + 20;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -264,8 +257,8 @@ const Game = () => {
       onReload = true;
       const newLength = sparkCount;
       sparks[newLength] = new PIXI.Sprite.from(spark);
-      sparkXs[newLength] = playerX + 30;
-      sparkYs[newLength] = playerY + 30;
+      sparkXs[newLength] = playerX + 10;
+      sparkYs[newLength] = playerY + 10;
       app.stage.addChild(sparks[newLength]);
 
       app.ticker.add((delta) => {
@@ -501,6 +494,8 @@ const Game = () => {
   };
 
   useEffect(() => {
+    // initialization
+
     document.body.onkeydown = keyPress;
     document.body.onkeyup = keyRelease;
     // On first render add app to DOM
@@ -508,18 +503,40 @@ const Game = () => {
     // Start the PixiJS app
     app.start();
 
-    sprite.on("pointerdown", onClick);
-    app.stage.addChild(sprite);
+    // dungeon
+    const dungeon = dungeoneer.build({
+      width: 500,
+      height: 500,
+      seed,
+    });
+    // app.stage.addChild(sprite);
+    const tiles = dungeon.tiles;
+    for (let i = 0; i < 500 / 32; ++i) {
+      for (let j = 0; j < 500 / 32; ++j) {
+        if (tiles[i][j].type === "wall") {
+          const wall = new PIXI.Sprite.from(dirt);
+          wall.width = 32;
+          wall.height = 32;
+          wall.x = tiles[i][j].x * 32;
+          wall.y = tiles[i][j].y * 32;
+          app.stage.addChild(wall);
+        } else {
+          const wall = new PIXI.Sprite.from(crate);
+          wall.width = 32;
+          wall.height = 32;
+          wall.x = tiles[i][j].x * 32;
+          wall.y = tiles[i][j].y * 32;
+          app.stage.addChild(wall);
+          allColliders.push(new Collider({ name: "wall" }, wall));
+          allWalls.push(new Collider({ name: "wall" }, wall));
+        }
+      }
+    }
 
     // test enemies
     app.stage.addChild(enemy);
     app.stage.addChild(enemy1);
     app.stage.addChild(enemy2);
-
-    // test crates
-    app.stage.addChild(wall);
-    app.stage.addChild(wall1);
-    app.stage.addChild(wall2);
 
     playerX = app.screen.width / 2;
     playerY = app.screen.height / 2;
@@ -533,13 +550,6 @@ const Game = () => {
     enemy1.y = 400;
     enemy2.x = 600;
     enemy2.y = 400;
-
-    wall.x = 130;
-    wall.y = 170;
-    wall1.x = 400;
-    wall1.y = 80;
-    wall2.x = 370;
-    wall2.y = 600;
 
     app.ticker.add((delta) => {
       character.x = playerX;
