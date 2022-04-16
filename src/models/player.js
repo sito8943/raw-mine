@@ -12,7 +12,8 @@ export default class Player {
       armor: null,
       bag: null,
       drill: null,
-    }
+    },
+    sprite
   ) {
     const { name, life, weapon, armor, bag, drill } = options;
     this.name = name;
@@ -21,6 +22,20 @@ export default class Player {
     this.armor = armor === null ? new Armor() : armor;
     this.bag = bag === null ? new Bag() : bag;
     this.drill = drill === null ? new Drill(1) : drill;
+    this.sprite = sprite;
+  }
+
+  IsCollider() {
+    return false;
+  }
+
+  IsPlayer() {
+    return true;
+  }
+
+  IsAlive() {
+    if (this.life.current > 0) return true;
+    return false;
   }
 
   get Name() {
@@ -47,6 +62,10 @@ export default class Player {
     return this.drill;
   }
 
+  get Sprite() {
+    return this.sprite;
+  }
+
   set Name(newName) {
     this.name = newName;
   }
@@ -69,5 +88,9 @@ export default class Player {
 
   set Drill(newDrill) {
     this.drill = newDrill;
+  }
+
+  set Sprite(newSprite) {
+    this.sprite = newSprite;
   }
 }
