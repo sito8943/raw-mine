@@ -4,6 +4,16 @@ const AudioController = React.createContext();
 
 const audioControllerReducer = (audioControllerState, action) => {
   switch (action.type) {
+    case "drill": {
+      console.log("drill");
+      let newDrill = 0;
+      if (audioControllerState.drill === 1) newDrill = 2;
+      else newDrill = 1;
+      return {
+        ...audioControllerState,
+        drill: newDrill,
+      };
+    }
     case "wallHit": {
       let newWallHit = 0;
       if (audioControllerState.shot === 1) newWallHit = 2;
@@ -63,6 +73,7 @@ const AudioControllerProvider = ({ children }) => {
   const [audioControllerState, setAudioControllerState] = React.useReducer(
     audioControllerReducer,
     {
+      drill: false,
       enemyHit: false,
       reloading: false,
       reloaded: false,

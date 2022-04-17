@@ -10,6 +10,7 @@ import reloadAudio from "../../assets/audio/reloading.mp3";
 import recharged from "../../assets/audio/recharged.mp3";
 import wallhit from "../../assets/audio/wallhit.mp3";
 import enemyhit from "../../assets/audio/enemyhit.mp3";
+import drill2 from "../../assets/audio/drill2.mp3";
 
 // controllers
 const shot = new Audio(shotAudio);
@@ -21,7 +22,8 @@ wallHit.volume = 0.2;
 const reloaded = new Audio(recharged);
 reloaded.volume = 0.2;
 const enemyHit = new Audio(enemyhit);
-
+const drill = new Audio(drill2);
+drill.volume = 0.2;
 const AudioController = () => {
   const { audioConfigState } = useAudioConfig();
   const { audioControllerState, setAudioControllerState } =
@@ -29,9 +31,21 @@ const AudioController = () => {
 
   useEffect(() => {
     shot.load();
+    reload.load();
+    wallHit.load();
+    enemyHit.load();
+    drill.load();
     if (audioConfigState.sfx) {
     }
   }, []);
+
+  useEffect(() => {
+    console.log(audioControllerState.drill);
+    if (audioControllerState.drill !== false) {
+      drill.currentTime = 0;
+      drill.play();
+    }
+  }, [audioControllerState.drill]);
 
   useEffect(() => {
     if (audioControllerState.shot !== false) {

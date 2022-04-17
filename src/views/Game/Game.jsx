@@ -13,6 +13,7 @@ import characterImg from "../../assets/images/character.png";
 import spark from "../../assets/images/spark.gif";
 import crate from "../../assets/images/crates.png";
 import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.png";
+import pachan from "../../assets/images/674.png";
 
 // utils
 import app from "../../utils/app";
@@ -23,6 +24,8 @@ import Weapon, { WeaponsEnum } from "../../models/weapon";
 import Player from "../../models/player";
 import Enemy, { EnemiesEnum } from "../../models/enemy";
 import Collider from "../../models/collider";
+import Drill, { DrillsEnum } from "../../models/drill";
+import Mineral, { MineralsEnum } from "../../models/mineral";
 
 // styles
 import "./style.css";
@@ -62,9 +65,14 @@ let fDown = null;
 let fRight = null;
 let fLeft = null;
 let fUp = null;
+// drill
+let drillTimer = null;
 
 // fire intervals
 let fires = [];
+
+// minerals
+let distribution = [0, 0, 0, 0, 1, 1];
 
 // all colliders
 let allColliders = [
@@ -73,6 +81,7 @@ let allColliders = [
       name: "Sito",
       life: { max: 15, current: 15 },
       weapon: new Weapon(WeaponsEnum[0]),
+      drill: new Drill(DrillsEnum[0]),
     },
     character
   ),
@@ -81,6 +90,7 @@ let allColliders = [
   new Enemy(EnemiesEnum[0], enemy2),
 ];
 let allWalls = [];
+let allMinerals = [];
 
 const player = allColliders[0];
 
@@ -101,8 +111,28 @@ const Game = () => {
   const { setAudioControllerState } = useAudioController();
 
   const [mousePosition, setMousePosition] = useState();
-  const [w, setW] = useState(false);
   const [attackSpeed, setAttackSpeed] = useState(player.Weapon.Reload);
+
+  const [drill, setDrill] = useState(false);
+
+  useEffect(() => {
+    // init drill
+    if (drill) {
+      // clearing movements
+      clearInterval(iRight);
+      clearInterval(iDown);
+      clearInterval(iLeft);
+      clearInterval(iUp);
+      // clearing fire
+      clearInterval(fRight);
+      clearInterval(fDown);
+      clearInterval(fLeft);
+      clearInterval(fUp);
+      executeDrill();
+    } else clearInterval(drillTimer);
+  }, [drill]);
+
+  const [w, setW] = useState(false);
 
   useEffect(() => {
     if (onReload)
@@ -457,9 +487,10 @@ const Game = () => {
 
   // move execution
   const executeMoveUp = () => {
-    if (playerY >= 5 && !colliderCollision(player.Sprite)) {
+    if (playerY >= 5 && !colliderCollision(player.Sprite, "wall")) {
       iUp = setInterval(() => {
-        if (playerY >= 5 && !colliderCollision(player.Sprite)) playerY -= 1;
+        if (playerY >= 5 && !colliderCollision(player.Sprite, "wall"))
+          playerY -= 1;
         else {
           playerY += 5;
         }
@@ -467,30 +498,62 @@ const Game = () => {
     } else playerY += 7;
   };
   const executeMoveLeft = () => {
-    if (playerX >= 5 && !colliderCollision(player.Sprite)) {
+    if (playerX >= 5 && !colliderCollision(player.Sprite, "wall")) {
       iLeft = setInterval(() => {
-        if (playerX >= 5 && !colliderCollision(player.Sprite)) playerX -= 1;
+        if (playerX >= 5 && !colliderCollision(player.Sprite, "wall"))
+          playerX -= 1;
         else playerX += 5;
       }, 10);
     } else playerX += 7;
   };
   const executeMoveRight = () => {
-    if (playerX <= app.screen.width && !colliderCollision(player.Sprite)) {
+    if (
+      playerX <= app.screen.width &&
+      !colliderCollision(player.Sprite, "wall")
+    ) {
       iRight = setInterval(() => {
-        if (playerX <= app.screen.width && !colliderCollision(player.Sprite))
+        if (
+          playerX <= app.screen.width &&
+          !colliderCollision(player.Sprite, "wall")
+        )
           playerX += 1;
         else playerX -= 5;
       }, 10);
     } else playerX -= 7;
   };
   const executeMoveDown = () => {
-    if (playerY <= app.screen.height && !colliderCollision(player.Sprite)) {
+    if (
+      playerY <= app.screen.height &&
+      !colliderCollision(player.Sprite, "wall")
+    ) {
       iDown = setInterval(() => {
-        if (playerY <= app.screen.height && !colliderCollision(player.Sprite))
+        if (
+          playerY <= app.screen.height &&
+          !colliderCollision(player.Sprite, "wall")
+        )
           playerY += 1;
         else playerY -= 5;
       }, 10);
     } else playerY -= 7;
+  };
+
+  const executeDrill = () => {
+    if (colliderCollision(player.Sprite, "mineral")) {
+      const mineral = colliderCollision(player.Sprite, "mineral");
+      if (mineral !== false || mineral === 0) {
+        setAudioControllerState({ type: "drill" });
+        if (allMinerals[mineral].TakeDamage(player.Drill.Damage))
+          app.stage.removeChild(allMinerals[mineral].Sprite);
+      }
+      drillTimer = setInterval(() => {
+        const mineral = colliderCollision(player.Sprite, "mineral");
+        if (mineral !== false || mineral === 0) {
+          setAudioControllerState({ type: "drill" });
+          if (allMinerals[mineral].TakeDamage(player.Drill.Damage))
+            app.stage.removeChild(allMinerals[mineral].Sprite);
+        }
+      }, 1000);
+    }
   };
 
   useEffect(() => {
@@ -511,16 +574,29 @@ const Game = () => {
     });
     // app.stage.addChild(sprite);
     const tiles = dungeon.tiles;
-    console.log(tiles);
     for (let i = 0; i < 20; ++i) {
       for (let j = 0; j < 20; ++j) {
         if (tiles[i][j].type === "wall" || tiles[i][j].type === "door") {
           const wall = new PIXI.Sprite.from(dirt);
           wall.width = 35;
           wall.height = 35;
-          wall.x = tiles[i][j].x * 35;
+          wall.x = tiles[i][j].x * +35;
           wall.y = tiles[i][j].y * 35;
+          wall.z = 1;
           app.stage.addChild(wall);
+          // generation mineral
+          const rand = Math.floor(Math.random() * (distribution.length - 1));
+          if (distribution[rand] === 1) {
+            // create mineral
+            const mineral = new PIXI.Sprite.from(pachan);
+            mineral.width = 20;
+            mineral.height = 20;
+            mineral.x = wall.x + 5;
+            mineral.y = wall.y + 5;
+            mineral.z = 99;
+            allMinerals.push(new Mineral(MineralsEnum[0], mineral));
+            app.stage.addChild(mineral);
+          }
         } else {
           const wall = new PIXI.Sprite.from(crate);
           wall.width = 35;
@@ -566,19 +642,17 @@ const Game = () => {
   }, []);
 
   const keyRelease = (e) => {
-    const { key } = e;
-    switch (key) {
-      case "w":
-      case "W":
+    const { code } = e;
+    switch (code) {
+      case "Space":
+        return setDrill(false);
+      case "KeyW":
         return setW(false);
-      case "d":
-      case "D":
+      case "KeyD":
         return setD(false);
-      case "s":
-      case "S":
+      case "KeyS":
         return setS(false);
-      case "a":
-      case "A":
+      case "KeyA":
         return setA(false);
       case "ArrowUp":
         return setUp(false);
@@ -594,24 +668,18 @@ const Game = () => {
   };
 
   const keyPress = (e) => {
-    const { key } = e;
-    switch (key) {
-      case "w":
-      case "W":
-        setW(true);
-        break;
-      case "d":
-      case "D":
-        setD(true);
-        break;
-      case "s":
-      case "S":
-        setS(true);
-        break;
-      case "a":
-      case "A":
-        setA(true);
-        break;
+    const { code } = e;
+    switch (code) {
+      case "Space":
+        return setDrill(true);
+      case "KeyW":
+        return setW(true);
+      case "KeyD":
+        return setD(true);
+      case "KeyS":
+        return setS(true);
+      case "KeyA":
+        return setA(true);
       case "ArrowUp":
         return setUp(true);
       case "ArrowRight":
@@ -628,6 +696,8 @@ const Game = () => {
   const handleDirection = (e) => {
     const { id } = e.target;
     switch (id) {
+      case "drill":
+        return setDrill(true);
       case "fup":
         return setUp(true);
       case "fright":
@@ -650,53 +720,89 @@ const Game = () => {
   const handleRelease = (e) => {
     const { id } = e.target;
     switch (id) {
+      case "drill":
+        return setDrill(false);
       case "fup":
-        return executeFireUp();
+        return setUp(false);
       case "fright":
-        return executeFireRight();
+        return setRight(false);
       case "fleft":
-        return executeFireLeft();
+        return setLeft(false);
       case "fdown":
-        return executeFireDown();
+        return setDown(false);
       case "up":
-        playerY -= 1;
-        break;
+        return setW(false);
       case "right":
-        playerX += 1;
-        break;
+        return setD(false);
       case "down":
-        playerY += 1;
-        break;
+        return setS(false);
       default: //left
-        playerX -= 1;
+        return setA(false);
     }
   };
 
-  const colliderCollision = (sprite) => {
-    for (let i = 0; i < allWalls.length; ++i) {
-      const currentSprite = allWalls[i].Sprite;
+  const colliderCollision = (sprite, which) => {
+    const toIterate = which === "wall" ? allWalls : allMinerals;
+    for (let i = 0; i < toIterate.length; ++i) {
+      const currentSprite = toIterate[i].Sprite;
       let xss = false;
+      let yss = false;
       // going by left || going by right
-      if (
-        (sprite.x + sprite.width >= currentSprite.x + 2 &&
-          sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
-        (sprite.x >= currentSprite.x &&
-          sprite.x <= currentSprite.x + currentSprite.width - 2)
-      ) {
-        xss = true;
+      if (which === "wall") {
+        if (
+          (sprite.x + sprite.width >= currentSprite.x + 2 &&
+            sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
+          (sprite.x >= currentSprite.x &&
+            sprite.x <= currentSprite.x + currentSprite.width - 2)
+        ) {
+          xss = true;
+        }
+      } else if (which === "mineral") {
+        if (
+          (sprite.x < currentSprite.x &&
+            sprite.x + sprite.width > currentSprite.x + currentSprite.width) ||
+          (sprite.x + sprite.width >= currentSprite.x + 2 &&
+            sprite.x + sprite.width <= currentSprite.x + currentSprite.width) ||
+          (sprite.x >= currentSprite.x &&
+            sprite.x <= currentSprite.x + currentSprite.width - 2)
+        )
+          xss = true;
       }
 
       if (xss) {
         // down collision || up collision
-        if (
-          (sprite.y >= currentSprite.y &&
-            sprite.y <= currentSprite.y + currentSprite.height - 2) ||
-          (sprite.y + sprite.height >= currentSprite.y + 2 &&
-            sprite.y + sprite.height <= currentSprite.y + currentSprite.height)
-        ) {
-          return true;
+        if (which === "wall") {
+          if (
+            (sprite.y >= currentSprite.y &&
+              sprite.y <= currentSprite.y + currentSprite.height - 2) ||
+            (sprite.y + sprite.height >= currentSprite.y + 2 &&
+              sprite.y + sprite.height <=
+                currentSprite.y + currentSprite.height)
+          )
+            yss = true;
+        } else if (which === "mineral") {
+          if (
+            (sprite.y < currentSprite.y &&
+              sprite.y + sprite.height >
+                currentSprite.y + currentSprite.height) ||
+            (sprite.y >= currentSprite.y &&
+              sprite.y <= currentSprite.y + currentSprite.height - 2) ||
+            (sprite.y + sprite.height >= currentSprite.y + 2 &&
+              sprite.y + sprite.height <=
+                currentSprite.y + currentSprite.height)
+          )
+            yss = true;
         }
       }
+
+      if (which)
+        if (yss) {
+          if (which !== "wall") {
+            if (!toIterate[i].IsAlive()) return false;
+            return i;
+          }
+          return true;
+        }
     }
   };
 
@@ -753,14 +859,16 @@ const Game = () => {
           <button
             id="left"
             className={a ? "active" : ""}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             A
           </button>
           <button
             id="right"
             className={d ? "active" : ""}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             D
           </button>
@@ -769,7 +877,8 @@ const Game = () => {
           <button
             id="down"
             className={s ? "active" : ""}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             S
           </button>
@@ -780,7 +889,8 @@ const Game = () => {
           <button
             id="fup"
             className={`arrow ${up ? "active" : ""}`}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             ↑
           </button>
@@ -789,14 +899,24 @@ const Game = () => {
           <button
             id="fleft"
             className={`arrow ${left ? "active" : ""}`}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             ←
           </button>
           <button
+            id="drill"
+            className={`arrow ${drill ? "active" : ""}`}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
+          >
+            🔨
+          </button>
+          <button
             id="fright"
             className={`arrow ${right ? "active" : ""}`}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             →
           </button>
@@ -805,7 +925,8 @@ const Game = () => {
           <button
             id="fdown"
             className={`arrow ${down ? "active" : ""}`}
-            onClick={handleDirection}
+            onMouseDown={handleDirection}
+            onMouseUp={handleRelease}
           >
             ↓
           </button>

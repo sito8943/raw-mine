@@ -1,23 +1,23 @@
 export const MineralsEnum = [
-  { name: "Piedra" }, // trash
-  { name: "Carbón" }, // material
-  { name: "Estaño" }, // material
-  { name: "Cobre" }, // material
-  { name: "Hierro" }, // material
-  { name: "Ojo de Tigre" }, // to sell
-  { name: "Malaquita" }, // to sell
-  { name: "Amatista" }, // to sell
-  { name: "Oro" }, // material +damage / to sell
-  { name: "Cuarzo" }, // material
-  { name: "Jaspe Rojo" }, // maeterial +life
-  { name: "Calcita" }, // material
-  { name: "Aventurina" }, // material ++damage
-  { name: "Obsidiana" }, // material ++defense
-  { name: "Ruby" }, // material ++life
-  { name: "Safiro" }, // material +++damage
-  { name: "Calcedonia" }, // material +all
-  { name: "Diamante" }, // material ++life ++defense
-  { name: "Esmeralda" }, // material ++damage ++defense
+  { name: "Piedra", life: 15 }, // trash
+  { name: "Carbón", life: 15 }, // material
+  { name: "Estaño", life: 15 }, // material
+  { name: "Cobre", life: 15 }, // material
+  { name: "Hierro", life: 15 }, // material
+  { name: "Ojo de Tigre", life: 15 }, // to sell
+  { name: "Malaquita", life: 15 }, // to sell
+  { name: "Amatista", life: 15 }, // to sell
+  { name: "Oro", life: 15 }, // material +damage / to sell
+  { name: "Cuarzo", life: 15 }, // material
+  { name: "Jaspe Rojo", life: 15 }, // maeterial +life
+  { name: "Calcita", life: 15 }, // material
+  { name: "Aventurina", life: 15 }, // material ++damage
+  { name: "Obsidiana", life: 15 }, // material ++defense
+  { name: "Ruby", life: 15 }, // material ++life
+  { name: "Safiro", life: 15 }, // material +++damage
+  { name: "Calcedonia", life: 15 }, // material +all
+  { name: "Diamante", life: 15 }, // material ++life ++defense
+  { name: "Esmeralda", life: 15 }, // material ++damage ++defense
 ];
 
 export const MineralsEnumType = {
@@ -43,16 +43,45 @@ export const MineralsEnumType = {
 };
 
 export default class Mineral {
-  constructor(options = { name: "" }) {
-    const { name } = options;
+  constructor(options = { name: "", life: 0 }, sprite) {
+    const { name, life } = options;
     this.name = name;
+    this.sprite = sprite;
+    this.life = { max: life, current: life };
   }
 
   get Name() {
     return this.name;
   }
 
+  TakeDamage(damage) {
+    this.life.current -= damage;
+    if (this.life.current <= 0) return true;
+    return false;
+  }
+
+  IsAlive() {
+    if (this.life.current > 0) return true;
+    return false;
+  }
+
+  get Life() {
+    return this.life;
+  }
+
+  get Sprite() {
+    return this.sprite;
+  }
+
   set Name(newName) {
     this.name = newName;
+  }
+
+  set Sprite(newSprite) {
+    this.sprite = newSprite;
+  }
+
+  set Life(newLife) {
+    this.life = newLife;
   }
 }
