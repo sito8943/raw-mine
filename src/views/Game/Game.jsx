@@ -34,11 +34,11 @@ import esmerald from "../../assets/images/ores/esmerald.png";
 import slime1 from "../../assets/images/enemies/slime1.png";
 import slime2 from "../../assets/images/enemies/slime2.png";
 import slime3 from "../../assets/images/enemies/slime3.png";
-import slime4 from "../../assets/images/enemies/slime4.png";
+import slime4 from "../../assets/images/674.png";
 
 import spark from "../../assets/images/spark.gif";
-import crate from "../../assets/images/crates.png";
-import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.png";
+import crate from "../../assets/images/wall.png";
+import dirt from "../../assets/images/grass.png";
 
 // utils
 import app from "../../utils/app";
@@ -71,8 +71,8 @@ let playerY = 0;
 // character
 const character = new PIXI.Sprite(d1);
 
-character.width = 25;
-character.height = 25;
+character.width = 35;
+character.height = 35;
 
 let sparks = [];
 let sparkXs = [];
@@ -112,7 +112,7 @@ let distribution = [
 let eDistribution = [
   [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
@@ -122,7 +122,7 @@ let allColliders = [
     {
       name: "Sito",
       life: { max: 15, current: 15 },
-      weapon: new Weapon(WeaponsEnum[0]),
+      weapon: new Weapon(WeaponsEnum[4]),
       drill: new Drill(DrillsEnum[0]),
     },
     character
@@ -290,6 +290,8 @@ const Game = () => {
   const executeFireUp = () => {
     if (!onReload) {
       setAudioControllerState({ type: "shot" });
+      if (character.texture === u1) character.texture = u2;
+      else character.texture = u1;
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
@@ -321,6 +323,8 @@ const Game = () => {
     fUp = setInterval(() => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
+      if (character.texture === u1) character.texture = u2;
+      else character.texture = u1;
       onReload = true;
       const newLength = sparkCount;
       sparks[newLength] = CreateSpark(spark, playerX, playerY);
@@ -350,6 +354,8 @@ const Game = () => {
   const executeFireRight = () => {
     if (!onReload) {
       setAudioControllerState({ type: "shot" });
+      if (character.texture === r1) character.texture = r2;
+      else character.texture = r1;
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
@@ -381,6 +387,8 @@ const Game = () => {
     fRight = setInterval(() => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
+      if (character.texture === r1) character.texture = r2;
+      else character.texture = r1;
       const newLength = sparkCount;
       sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
@@ -409,6 +417,8 @@ const Game = () => {
   const executeFireDown = () => {
     if (!onReload) {
       setAudioControllerState({ type: "shot" });
+      if (character.texture === d1) character.texture = d2;
+      else character.texture = d1;
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
@@ -440,6 +450,8 @@ const Game = () => {
     fDown = setInterval(() => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
+      if (character.texture === d1) character.texture = d2;
+      else character.texture = d1;
       const newLength = sparkCount;
       sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
@@ -468,6 +480,8 @@ const Game = () => {
   const executeFireLeft = () => {
     if (!onReload) {
       setAudioControllerState({ type: "shot" });
+      if (character.texture === l1) character.texture = l2;
+      else character.texture = l1;
       onReload = true;
       sparkCount += 1;
       const newLength = sparkCount;
@@ -499,6 +513,8 @@ const Game = () => {
     fLeft = setInterval(() => {
       sparkCount += 1;
       setAudioControllerState({ type: "shot" });
+      if (character.texture === l1) character.texture = l2;
+      else character.texture = l1;
       const newLength = sparkCount;
       sparks[newLength] = CreateSpark(spark, playerX, playerY);
       sparkXs[newLength] = playerX + 10;
@@ -621,14 +637,14 @@ const Game = () => {
     });
     // app.stage.addChild(sprite);
     const tiles = dungeon.tiles;
-    for (let i = 0; i < 20; ++i) {
-      for (let j = 0; j < 20; ++j) {
+    for (let i = 0; i < 25; ++i) {
+      for (let j = 0; j < 25; ++j) {
         if (tiles[i][j].type === "wall" || tiles[i][j].type === "door") {
           const wall = new PIXI.Sprite.from(dirt);
-          wall.width = 35;
-          wall.height = 35;
-          wall.x = tiles[i][j].x * +35;
-          wall.y = tiles[i][j].y * 35;
+          wall.width = 45;
+          wall.height = 45;
+          wall.x = tiles[i][j].x * 45;
+          wall.y = tiles[i][j].y * 45;
           wall.z = 1;
           app.stage.addChild(wall);
           // generation mineral
@@ -679,10 +695,10 @@ const Game = () => {
               }
             }
             mineral = new Mineral(MineralsEnum[rand], mineralS);
-            mineralS.width = 20;
-            mineralS.height = 20;
-            mineralS.x = wall.x + 5;
-            mineralS.y = wall.y + 5;
+            mineralS.width = 27;
+            mineralS.height = 27;
+            mineralS.x = wall.x;
+            mineralS.y = wall.y;
             mineralS.z = 99;
             allMinerals.push(mineral);
             app.stage.addChild(mineralS);
@@ -692,8 +708,9 @@ const Game = () => {
           rand1 = Math.floor(Math.random() * (eDistribution[rand].length - 1));
           if (eDistribution[rand][rand1] === 1) {
             // create mineral
-            let slimeS = null;
+            let slimeS = new PIXI.Sprite.from(slime4);
             let slime = null;
+            console.log(rand);
             switch (rand) {
               case 1: {
                 slimeS = new PIXI.Sprite.from(slime2);
@@ -704,6 +721,7 @@ const Game = () => {
                 break;
               }
               case 3: {
+                console.log(4);
                 slimeS = new PIXI.Sprite.from(slime4);
                 break;
               }
@@ -723,10 +741,10 @@ const Game = () => {
           }
         } else {
           const wall = new PIXI.Sprite.from(crate);
-          wall.width = 35;
-          wall.height = 35;
-          wall.x = tiles[i][j].x * 35;
-          wall.y = tiles[i][j].y * 35;
+          wall.width = 45;
+          wall.height = 45;
+          wall.x = tiles[i][j].x * 45;
+          wall.y = tiles[i][j].y * 45;
           app.stage.addChild(wall);
           allColliders.push(new Collider({ name: "wall" }, wall));
           allWalls.push(new Collider({ name: "wall" }, wall));
