@@ -19,7 +19,16 @@ import right2 from "../../assets/images/character/right2.png";
 import up1 from "../../assets/images/character/up1.png";
 import up2 from "../../assets/images/character/up2.png";
 
-import characterImg from "../../assets/images/character.png";
+// ores
+import stone from "../../assets/images/ores/stone.png";
+import carbon from "../../assets/images/ores/carbon.png";
+import copper from "../../assets/images/ores/copper.png";
+import iron from "../../assets/images/ores/iron.png";
+import gold from "../../assets/images/ores/gold.png";
+import ruby from "../../assets/images/ores/ruby.png";
+import zaphire from "../../assets/images/ores/zaphire.png";
+import diamond from "../../assets/images/ores/diamond.png";
+import esmerald from "../../assets/images/ores/esmerald.png";
 
 // enemies
 import slime1 from "../../assets/images/enemies/slime1.png";
@@ -30,7 +39,6 @@ import slime4 from "../../assets/images/enemies/slime4.png";
 import spark from "../../assets/images/spark.gif";
 import crate from "../../assets/images/crates.png";
 import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.png";
-import pachan from "../../assets/images/674.png";
 
 // utils
 import app from "../../utils/app";
@@ -89,7 +97,17 @@ let drillTimer = null;
 let fires = [];
 
 // minerals
-let distribution = [0, 0, 0, 0, 1, 1];
+let distribution = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+];
 // enemy distribution
 let eDistribution = [
   [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -615,22 +633,63 @@ const Game = () => {
           app.stage.addChild(wall);
           // generation mineral
           let rand = Math.floor(Math.random() * (distribution.length - 1));
-          if (distribution[rand] === 1) {
+          let rand1 = Math.floor(
+            Math.random() * (distribution[rand].length - 1)
+          );
+          if (distribution[rand][rand1] === 1) {
             // create mineral
-            const mineral = new PIXI.Sprite.from(pachan);
-            mineral.width = 20;
-            mineral.height = 20;
-            mineral.x = wall.x + 5;
-            mineral.y = wall.y + 5;
-            mineral.z = 99;
-            allMinerals.push(new Mineral(MineralsEnum[0], mineral));
-            app.stage.addChild(mineral);
+            let mineralS = null;
+            let mineral = null;
+            switch (rand) {
+              case 1: {
+                mineralS = new PIXI.Sprite.from(carbon);
+                break;
+              }
+              case 2: {
+                mineralS = new PIXI.Sprite.from(copper);
+                break;
+              }
+              case 3: {
+                mineralS = new PIXI.Sprite.from(iron);
+                break;
+              }
+              case 4: {
+                mineralS = new PIXI.Sprite.from(gold);
+                break;
+              }
+              case 5: {
+                mineralS = new PIXI.Sprite.from(ruby);
+                break;
+              }
+              case 6: {
+                mineralS = new PIXI.Sprite.from(zaphire);
+                break;
+              }
+              case 7: {
+                mineralS = new PIXI.Sprite.from(diamond);
+                break;
+              }
+              case 8: {
+                mineralS = new PIXI.Sprite.from(esmerald);
+                break;
+              }
+              default: {
+                mineralS = new PIXI.Sprite.from(stone);
+                break;
+              }
+            }
+            mineral = new Mineral(MineralsEnum[rand], mineralS);
+            mineralS.width = 20;
+            mineralS.height = 20;
+            mineralS.x = wall.x + 5;
+            mineralS.y = wall.y + 5;
+            mineralS.z = 99;
+            allMinerals.push(mineral);
+            app.stage.addChild(mineralS);
           }
           // generation enemy
           rand = Math.floor(Math.random() * (eDistribution.length - 1));
-          const rand1 = Math.floor(
-            Math.random() * (eDistribution[rand].length - 1)
-          );
+          rand1 = Math.floor(Math.random() * (eDistribution[rand].length - 1));
           if (eDistribution[rand][rand1] === 1) {
             // create mineral
             let slimeS = null;
@@ -638,25 +697,22 @@ const Game = () => {
             switch (rand) {
               case 1: {
                 slimeS = new PIXI.Sprite.from(slime2);
-                slime = new Enemy(EnemiesEnum[1], slimeS);
                 break;
               }
               case 2: {
                 slimeS = new PIXI.Sprite.from(slime3);
-                slime = new Enemy(EnemiesEnum[2], slimeS);
                 break;
               }
               case 3: {
                 slimeS = new PIXI.Sprite.from(slime4);
-                slime = new Enemy(EnemiesEnum[3], slimeS);
                 break;
               }
               default: {
                 slimeS = new PIXI.Sprite.from(slime1);
-                slime = new Enemy(EnemiesEnum[0], slimeS);
                 break;
               }
             }
+            slime = new Enemy(EnemiesEnum[rand], slimeS);
             slimeS.width = 25;
             slimeS.height = 25;
             slimeS.x = wall.x + 5;
