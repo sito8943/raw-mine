@@ -8,8 +8,25 @@ import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
 
 // sprites
-// import back from "../../assets/images/back.png";
+// character
+// down
+import down1 from "../../assets/images/character/down1.png";
+import down2 from "../../assets/images/character/down2.png";
+import left1 from "../../assets/images/character/left1.png";
+import left2 from "../../assets/images/character/left2.png";
+import right1 from "../../assets/images/character/right1.png";
+import right2 from "../../assets/images/character/right2.png";
+import up1 from "../../assets/images/character/up1.png";
+import up2 from "../../assets/images/character/up2.png";
+
 import characterImg from "../../assets/images/character.png";
+
+// enemies
+import slime1 from "../../assets/images/enemies/slime1.png";
+import slime2 from "../../assets/images/enemies/slime2.png";
+import slime3 from "../../assets/images/enemies/slime3.png";
+import slime4 from "../../assets/images/enemies/slime4.png";
+
 import spark from "../../assets/images/spark.gif";
 import crate from "../../assets/images/crates.png";
 import dirt from "../../assets/images/tiles/DirtGrassTilemap/Layer 1_sprite_6.png";
@@ -30,24 +47,24 @@ import Mineral, { MineralsEnum } from "../../models/mineral";
 // styles
 import "./style.css";
 
+// textures
+const d1 = new PIXI.Texture.from(down1);
+const d2 = new PIXI.Texture.from(down2);
+const u1 = new PIXI.Texture.from(up1);
+const u2 = new PIXI.Texture.from(up2);
+const l1 = new PIXI.Texture.from(left1);
+const l2 = new PIXI.Texture.from(left2);
+const r1 = new PIXI.Texture.from(right1);
+const r2 = new PIXI.Texture.from(right2);
+
 let playerX = 0;
 let playerY = 0;
 
 // character
-const character = new PIXI.Sprite.from(characterImg);
-// test enemies
-const enemy = new PIXI.Sprite.from(characterImg);
-const enemy1 = new PIXI.Sprite.from(characterImg);
-const enemy2 = new PIXI.Sprite.from(characterImg);
+const character = new PIXI.Sprite(d1);
 
 character.width = 25;
 character.height = 25;
-enemy.width = 60;
-enemy.height = 60;
-enemy1.width = 60;
-enemy1.height = 60;
-enemy2.width = 60;
-enemy2.height = 60;
 
 let sparks = [];
 let sparkXs = [];
@@ -73,6 +90,13 @@ let fires = [];
 
 // minerals
 let distribution = [0, 0, 0, 0, 1, 1];
+// enemy distribution
+let eDistribution = [
+  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
 
 // all colliders
 let allColliders = [
@@ -85,9 +109,6 @@ let allColliders = [
     },
     character
   ),
-  new Enemy(EnemiesEnum[0], enemy),
-  new Enemy(EnemiesEnum[0], enemy1),
-  new Enemy(EnemiesEnum[0], enemy2),
 ];
 let allWalls = [];
 let allMinerals = [];
@@ -193,10 +214,10 @@ const Game = () => {
   useEffect(() => {
     if (!up) clearInterval(fUp);
     else {
-      executeFireUp();
       clearInterval(fRight);
       clearInterval(fDown);
       clearInterval(fLeft);
+      executeFireUp();
     }
   }, [up]);
 
@@ -205,10 +226,10 @@ const Game = () => {
   useEffect(() => {
     if (!left) clearInterval(fLeft);
     else {
-      executeFireLeft();
       clearInterval(fUp);
       clearInterval(fDown);
       clearInterval(fRight);
+      executeFireLeft();
     }
   }, [left]);
 
@@ -217,10 +238,10 @@ const Game = () => {
   useEffect(() => {
     if (!right) clearInterval(fRight);
     else {
-      executeFireRight();
       clearInterval(fLeft);
       clearInterval(fDown);
       clearInterval(fUp);
+      executeFireRight();
     }
   }, [right]);
 
@@ -229,10 +250,10 @@ const Game = () => {
   useEffect(() => {
     if (!down) clearInterval(fDown);
     else {
-      executeFireDown();
       clearInterval(fRight);
       clearInterval(fUp);
       clearInterval(fLeft);
+      executeFireDown();
     }
   }, [down]);
 
@@ -489,6 +510,8 @@ const Game = () => {
   const executeMoveUp = () => {
     if (playerY >= 5 && !colliderCollision(player.Sprite, "wall")) {
       iUp = setInterval(() => {
+        if (character.texture === u1) character.texture = u2;
+        else character.texture = u1;
         if (playerY >= 5 && !colliderCollision(player.Sprite, "wall"))
           playerY -= 1;
         else {
@@ -500,6 +523,8 @@ const Game = () => {
   const executeMoveLeft = () => {
     if (playerX >= 5 && !colliderCollision(player.Sprite, "wall")) {
       iLeft = setInterval(() => {
+        if (character.texture === l1) character.texture = l2;
+        else character.texture = l1;
         if (playerX >= 5 && !colliderCollision(player.Sprite, "wall"))
           playerX -= 1;
         else playerX += 5;
@@ -512,6 +537,8 @@ const Game = () => {
       !colliderCollision(player.Sprite, "wall")
     ) {
       iRight = setInterval(() => {
+        if (character.texture === r1) character.texture = r2;
+        else character.texture = r1;
         if (
           playerX <= app.screen.width &&
           !colliderCollision(player.Sprite, "wall")
@@ -527,6 +554,8 @@ const Game = () => {
       !colliderCollision(player.Sprite, "wall")
     ) {
       iDown = setInterval(() => {
+        if (character.texture === d1) character.texture = d2;
+        else character.texture = d1;
         if (
           playerY <= app.screen.height &&
           !colliderCollision(player.Sprite, "wall")
@@ -585,7 +614,7 @@ const Game = () => {
           wall.z = 1;
           app.stage.addChild(wall);
           // generation mineral
-          const rand = Math.floor(Math.random() * (distribution.length - 1));
+          let rand = Math.floor(Math.random() * (distribution.length - 1));
           if (distribution[rand] === 1) {
             // create mineral
             const mineral = new PIXI.Sprite.from(pachan);
@@ -596,6 +625,45 @@ const Game = () => {
             mineral.z = 99;
             allMinerals.push(new Mineral(MineralsEnum[0], mineral));
             app.stage.addChild(mineral);
+          }
+          // generation enemy
+          rand = Math.floor(Math.random() * (eDistribution.length - 1));
+          const rand1 = Math.floor(
+            Math.random() * (eDistribution[rand].length - 1)
+          );
+          if (eDistribution[rand][rand1] === 1) {
+            // create mineral
+            let slimeS = null;
+            let slime = null;
+            switch (rand) {
+              case 1: {
+                slimeS = new PIXI.Sprite.from(slime2);
+                slime = new Enemy(EnemiesEnum[1], slimeS);
+                break;
+              }
+              case 2: {
+                slimeS = new PIXI.Sprite.from(slime3);
+                slime = new Enemy(EnemiesEnum[2], slimeS);
+                break;
+              }
+              case 3: {
+                slimeS = new PIXI.Sprite.from(slime4);
+                slime = new Enemy(EnemiesEnum[3], slimeS);
+                break;
+              }
+              default: {
+                slimeS = new PIXI.Sprite.from(slime1);
+                slime = new Enemy(EnemiesEnum[0], slimeS);
+                break;
+              }
+            }
+            slimeS.width = 25;
+            slimeS.height = 25;
+            slimeS.x = wall.x + 5;
+            slimeS.y = wall.y + 5;
+            slimeS.z = 99;
+            allColliders.push(slime);
+            app.stage.addChild(slimeS);
           }
         } else {
           const wall = new PIXI.Sprite.from(crate);
@@ -610,23 +678,11 @@ const Game = () => {
       }
     }
 
-    // test enemies
-    app.stage.addChild(enemy);
-    app.stage.addChild(enemy1);
-    app.stage.addChild(enemy2);
-
     playerX = app.screen.width / 2;
     playerY = app.screen.height / 2;
 
     character.x = playerX;
     character.y = playerY;
-
-    enemy.x = 200;
-    enemy.y = 200;
-    enemy1.x = 400;
-    enemy1.y = 400;
-    enemy2.x = 600;
-    enemy2.y = 400;
 
     app.ticker.add((delta) => {
       character.x = playerX;

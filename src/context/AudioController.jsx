@@ -5,7 +5,6 @@ const AudioController = React.createContext();
 const audioControllerReducer = (audioControllerState, action) => {
   switch (action.type) {
     case "drill": {
-      console.log("drill");
       let newDrill = 0;
       if (audioControllerState.drill === 1) newDrill = 2;
       else newDrill = 1;

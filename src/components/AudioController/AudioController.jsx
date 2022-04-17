@@ -40,7 +40,6 @@ const AudioController = () => {
   }, []);
 
   useEffect(() => {
-    console.log(audioControllerState.drill);
     if (audioControllerState.drill !== false) {
       drill.currentTime = 0;
       drill.play();

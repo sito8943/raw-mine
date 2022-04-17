@@ -4,9 +4,24 @@ export const EnemiesEnumType = {
 
 export const EnemiesEnum = [
   {
-    name: "Slime de cueva",
+    name: "Green slime",
     life: { max: 15 },
     damage: 3,
+  },
+  {
+    name: "Blue slime",
+    life: { max: 17 },
+    damage: 5,
+  },
+  {
+    name: "Red slime",
+    life: { max: 19 },
+    damage: 7,
+  },
+  {
+    name: "Black slime",
+    life: { max: 22 },
+    damage: 9,
   },
   {
     name: "Planta carnivora",
