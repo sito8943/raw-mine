@@ -19,23 +19,6 @@ import right2 from "../../assets/images/character/right2.png";
 import up1 from "../../assets/images/character/up1.png";
 import up2 from "../../assets/images/character/up2.png";
 
-// ores
-import stone from "../../assets/images/ores/stone.png";
-import carbon from "../../assets/images/ores/carbon.png";
-import copper from "../../assets/images/ores/copper.png";
-import iron from "../../assets/images/ores/iron.png";
-import gold from "../../assets/images/ores/gold.png";
-import ruby from "../../assets/images/ores/ruby.png";
-import zaphire from "../../assets/images/ores/zaphire.png";
-import diamond from "../../assets/images/ores/diamond.png";
-import esmerald from "../../assets/images/ores/esmerald.png";
-
-// enemies
-import slime1 from "../../assets/images/enemies/slime1.png";
-import slime2 from "../../assets/images/enemies/slime2.png";
-import slime3 from "../../assets/images/enemies/slime3.png";
-import slime4 from "../../assets/images/674.png";
-
 import spark from "../../assets/images/spark.gif";
 import crate from "../../assets/images/wall.png";
 import dirt from "../../assets/images/grass.png";
@@ -43,17 +26,17 @@ import dirt from "../../assets/images/grass.png";
 // utils
 import app from "../../utils/app";
 import CreateSpark from "../../utils/spark";
+import { CreateEnemy, CreateMineral } from "../../utils/create";
 
 // models
 import Weapon, { WeaponsEnum } from "../../models/weapon";
 import Player from "../../models/player";
-import Enemy, { EnemiesEnum } from "../../models/enemy";
 import Collider from "../../models/collider";
 import Drill, { DrillsEnum } from "../../models/drill";
-import Mineral, { MineralsEnum } from "../../models/mineral";
 
 // styles
 import "./style.css";
+import Bag, { BagsEnum } from "../../models/bag";
 
 // textures
 const d1 = new PIXI.Texture.from(down1);
@@ -96,26 +79,6 @@ let drillTimer = null;
 // fire intervals
 let fires = [];
 
-// minerals
-let distribution = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-];
-// enemy distribution
-let eDistribution = [
-  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
 // all colliders
 let allColliders = [
   new Player(
@@ -124,6 +87,7 @@ let allColliders = [
       life: { max: 15, current: 15 },
       weapon: new Weapon(WeaponsEnum[4]),
       drill: new Drill(DrillsEnum[0]),
+      bag: new Bag(BagsEnum[0]),
     },
     character
   ),
@@ -605,15 +569,19 @@ const Game = () => {
       const mineral = colliderCollision(player.Sprite, "mineral");
       if (mineral !== false || mineral === 0) {
         setAudioControllerState({ type: "drill" });
-        if (allMinerals[mineral].TakeDamage(player.Drill.Damage))
+        if (allMinerals[mineral].TakeDamage(player.Drill.Damage)) {
           app.stage.removeChild(allMinerals[mineral].Sprite);
+          player.Bag.AddMineral(allMinerals[mineral]);
+        }
       }
       drillTimer = setInterval(() => {
         const mineral = colliderCollision(player.Sprite, "mineral");
         if (mineral !== false || mineral === 0) {
           setAudioControllerState({ type: "drill" });
-          if (allMinerals[mineral].TakeDamage(player.Drill.Damage))
+          if (allMinerals[mineral].TakeDamage(player.Drill.Damage)) {
             app.stage.removeChild(allMinerals[mineral].Sprite);
+            player.Bag.AddMineral(allMinerals[mineral]);
+          }
         }
       }, 1000);
     }
@@ -648,96 +616,15 @@ const Game = () => {
           wall.z = 1;
           app.stage.addChild(wall);
           // generation mineral
-          let rand = Math.floor(Math.random() * (distribution.length - 1));
-          let rand1 = Math.floor(
-            Math.random() * (distribution[rand].length - 1)
-          );
-          if (distribution[rand][rand1] === 1) {
-            // create mineral
-            let mineralS = null;
-            let mineral = null;
-            switch (rand) {
-              case 1: {
-                mineralS = new PIXI.Sprite.from(carbon);
-                break;
-              }
-              case 2: {
-                mineralS = new PIXI.Sprite.from(copper);
-                break;
-              }
-              case 3: {
-                mineralS = new PIXI.Sprite.from(iron);
-                break;
-              }
-              case 4: {
-                mineralS = new PIXI.Sprite.from(gold);
-                break;
-              }
-              case 5: {
-                mineralS = new PIXI.Sprite.from(ruby);
-                break;
-              }
-              case 6: {
-                mineralS = new PIXI.Sprite.from(zaphire);
-                break;
-              }
-              case 7: {
-                mineralS = new PIXI.Sprite.from(diamond);
-                break;
-              }
-              case 8: {
-                mineralS = new PIXI.Sprite.from(esmerald);
-                break;
-              }
-              default: {
-                mineralS = new PIXI.Sprite.from(stone);
-                break;
-              }
-            }
-            mineral = new Mineral(MineralsEnum[rand], mineralS);
-            mineralS.width = 27;
-            mineralS.height = 27;
-            mineralS.x = wall.x;
-            mineralS.y = wall.y;
-            mineralS.z = 99;
+          const mineral = CreateMineral(wall.x, wall.y);
+          if (mineral !== null) {
             allMinerals.push(mineral);
-            app.stage.addChild(mineralS);
+            app.stage.addChild(mineral.Sprite);
           }
-          // generation enemy
-          rand = Math.floor(Math.random() * (eDistribution.length - 1));
-          rand1 = Math.floor(Math.random() * (eDistribution[rand].length - 1));
-          if (eDistribution[rand][rand1] === 1) {
-            // create mineral
-            let slimeS = new PIXI.Sprite.from(slime4);
-            let slime = null;
-            console.log(rand);
-            switch (rand) {
-              case 1: {
-                slimeS = new PIXI.Sprite.from(slime2);
-                break;
-              }
-              case 2: {
-                slimeS = new PIXI.Sprite.from(slime3);
-                break;
-              }
-              case 3: {
-                console.log(4);
-                slimeS = new PIXI.Sprite.from(slime4);
-                break;
-              }
-              default: {
-                slimeS = new PIXI.Sprite.from(slime1);
-                break;
-              }
-            }
-            slime = new Enemy(EnemiesEnum[rand], slimeS);
-            slimeS.width = 25;
-            slimeS.height = 25;
-            slimeS.x = wall.x + 5;
-            slimeS.y = wall.y + 5;
-            slimeS.z = 99;
-            allColliders.push(slime);
-            app.stage.addChild(slimeS);
+          const enemy = CreateEnemy(wall.x, wall.y);
+          if (enemy !== null) {
+            allColliders.push(enemy);
+            app.stage.addChild(enemy.Sprite);
           }
         } else {
           const wall = new PIXI.Sprite.from(crate);
@@ -1061,6 +948,14 @@ const Game = () => {
             ↓
           </button>
         </div>
+      </div>
+      <div className="bag">
+        {player &&
+          Object.values(player.Bag.Objects).map((item, i) => (
+            <div key={i}>
+              {item.count} x {item.name}
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -1,3 +1,14 @@
+.bag {
+  padding: 20px;
+  position: absolute;
+  color: aliceblue;
+  background: #222222;
+  margin: 10px;
+  border-radius: 15px;
+  border: 1px dashed #646566;
+  opacity: 0.25;
+}
+
 .keys {
   position: absolute;
   width: 200px;

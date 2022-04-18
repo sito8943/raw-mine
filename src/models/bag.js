@@ -5,7 +5,7 @@ export const BagsEnumType = {
 export const BagsEnum = [
   {
     name: "Mochila de Cuero",
-    defense: 10,
+    capacity: 10,
   },
 ];
 export default class Bag {
@@ -13,6 +13,17 @@ export default class Bag {
     const { name, capacity } = options;
     this.name = name;
     this.capacity = capacity;
+    this.objects = [];
+  }
+
+  AddMineral(mineral) {
+    if (this.objects[mineral.Name] === undefined)
+      this.objects[mineral.Name] = { name: mineral.Name, count: 1 };
+    else this.objects[mineral.Name].count += 1;
+  }
+
+  get Objects() {
+    return this.objects;
   }
 
   get Name() {
