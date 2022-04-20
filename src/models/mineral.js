@@ -1,22 +1,22 @@
 export const MineralsEnum = [
   { name: "Piedra", life: 15 }, // trash
-  { name: "Carbón", life: 15 }, // material
-  { name: "Estaño", life: 15 }, // material
-  { name: "Cobre", life: 15 }, // material
-  { name: "Hierro", life: 15 }, // material
-  { name: "Ojo de Tigre", life: 15 }, // to sell
-  { name: "Malaquita", life: 15 }, // to sell
-  { name: "Amatista", life: 15 }, // to sell
-  { name: "Oro", life: 15 }, // material +damage / to sell
-  { name: "Cuarzo", life: 15 }, // material
-  { name: "Jaspe Rojo", life: 15 }, // maeterial +life
-  { name: "Calcita", life: 15 }, // material
-  { name: "Aventurina", life: 15 }, // material ++damage
-  { name: "Obsidiana", life: 15 }, // material ++defense
-  { name: "Ruby", life: 15 }, // material ++life
-  { name: "Safiro", life: 15 }, // material +++damage
-  { name: "Calcedonia", life: 15 }, // material +all
-  { name: "Diamante", life: 15 }, // material ++life ++defense
+  { name: "Carbón", life: 17 }, // material
+  { name: "Estaño", life: 17 }, // material
+  { name: "Cobre", life: 20 }, // material
+  { name: "Hierro", life: 25 }, // material
+  { name: "Ojo de Tigre", life: 5 }, // to sell
+  { name: "Malaquita", life: 5 }, // to sell
+  { name: "Amatista", life: 5 }, // to sell
+  { name: "Oro", life: 17 }, // material +damage / to sell
+  { name: "Cuarzo", life: 40 }, // material
+  { name: "Jaspe Rojo", life: 5 }, // material +life
+  { name: "Calcita", life: 25 }, // material
+  { name: "Aventurina", life: 25 }, // material ++damage
+  { name: "Obsidiana", life: 70 }, // material ++defense
+  { name: "Ruby", life: 35 }, // material ++life
+  { name: "Safiro", life: 35 }, // material +++damage
+  { name: "Calcedonia", life: 35 }, // material +all
+  { name: "Diamante", life: 50 }, // material ++life ++defense
   { name: "Esmeralda", life: 15 }, // material ++damage ++defense
 ];
 
