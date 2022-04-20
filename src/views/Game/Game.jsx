@@ -33,7 +33,7 @@ import Weapon, { WeaponsEnum } from "../../models/weapon";
 import Player from "../../models/player";
 import Collider from "../../models/collider";
 import Drill, { DrillsEnum } from "../../models/drill";
-
+import { AllDead } from "../../models/enemy";
 // styles
 import "./style.css";
 import Bag, { BagsEnum } from "../../models/bag";
@@ -92,6 +92,7 @@ let allColliders = [
     character
   ),
 ];
+let allEnemies = [];
 let allWalls = [];
 let allMinerals = [];
 
@@ -114,6 +115,7 @@ const Game = () => {
   const { setAudioControllerState } = useAudioController();
 
   const [mousePosition, setMousePosition] = useState();
+  const [showBag, setShowBag] = useState(false);
   const [attackSpeed, setAttackSpeed] = useState(player.Weapon.Reload);
 
   const [drill, setDrill] = useState(false);
@@ -624,6 +626,7 @@ const Game = () => {
           const enemy = CreateEnemy(wall.x, wall.y);
           if (enemy !== null) {
             allColliders.push(enemy);
+            allEnemies.push(enemy);
             app.stage.addChild(enemy.Sprite);
           }
         } else {
@@ -651,6 +654,16 @@ const Game = () => {
     });
 
     app.stage.addChild(character);
+
+    // damage tick
+    const damageTick = setInterval(() => {
+      if (!AllDead(allEnemies)) {
+        const enemy = colliderCollision(player.Sprite, "enemy");
+        if (enemy !== null && enemy !== false)
+          player.TakeDamage(allEnemies[enemy].Damage);
+        console.log(player.Life, allEnemies[enemy], allEnemies[enemy].Damage);
+      } else clearInterval(damageTick);
+    }, 1000);
 
     return () => {
       // On unload stop the application
@@ -759,7 +772,18 @@ const Game = () => {
   };
 
   const colliderCollision = (sprite, which) => {
-    const toIterate = which === "wall" ? allWalls : allMinerals;
+    let toIterate = [];
+    switch (which) {
+      case "wall":
+        toIterate = allWalls;
+        break;
+      case "mineral":
+        toIterate = allMinerals;
+        break;
+      default:
+        toIterate = allEnemies;
+        break;
+    }
     for (let i = 0; i < toIterate.length; ++i) {
       const currentSprite = toIterate[i].Sprite;
       let xss = false;
@@ -774,7 +798,7 @@ const Game = () => {
         ) {
           xss = true;
         }
-      } else if (which === "mineral") {
+      } else if (which === "mineral" || which === "enemy") {
         if (
           (sprite.x < currentSprite.x &&
             sprite.x + sprite.width > currentSprite.x + currentSprite.width) ||
@@ -797,7 +821,7 @@ const Game = () => {
                 currentSprite.y + currentSprite.height)
           )
             yss = true;
-        } else if (which === "mineral") {
+        } else if (which === "mineral" || which === "enemy") {
           if (
             (sprite.y < currentSprite.y &&
               sprite.y + sprite.height >
@@ -821,6 +845,7 @@ const Game = () => {
           return true;
         }
     }
+    return false;
   };
 
   const projectileCollision = (sprite) => {
@@ -950,12 +975,15 @@ const Game = () => {
         </div>
       </div>
       <div className="bag">
-        {player &&
-          Object.values(player.Bag.Objects).map((item, i) => (
-            <div key={i}>
-              {item.count} x {item.name}
-            </div>
-          ))}
+        <button onClick={() => setShowBag(!showBag)}>💼</button>
+        <div style={{ opacity: showBag ? 1 : 0 }}>
+          {player &&
+            Object.values(player.Bag.Objects).map((item, i) => (
+              <div key={i}>
+                {item.count} x {item.name}
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

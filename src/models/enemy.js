@@ -2,6 +2,12 @@ export const EnemiesEnumType = {
   Slime: 1,
 };
 
+export const AllDead = (objects) => {
+  for (let i = 0; i < objects.length; ++i)
+    if (objects[i].IsAlive()) return false;
+  return true;
+};
+
 export const EnemiesEnum = [
   {
     name: "Green slime",
@@ -103,6 +109,10 @@ export default class Enemy {
     return false;
   }
 
+  get Damage() {
+    return this.damage;
+  }
+
   get Name() {
     return this.name;
   }
@@ -125,5 +135,9 @@ export default class Enemy {
 
   set Sprite(newSprite) {
     this.sprite = newSprite;
+  }
+
+  set Damage(newDamage) {
+    this.damage = newDamage;
   }
 }

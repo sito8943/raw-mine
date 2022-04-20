@@ -25,6 +25,12 @@ export default class Player {
     this.sprite = sprite;
   }
 
+  TakeDamage(damage) {
+    this.life.current -= damage;
+    if (this.life.current <= 0) return true;
+    return false;
+  }
+
   IsCollider() {
     return false;
   }
