@@ -44,7 +44,9 @@
     "url": "https://github.com/SitoNumbis/raw-mine/issues"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "dungeoneer": "^2.1.5",
+    "js-base64": "^3.7.2",
     "parcel": "^2.4.1",
     "pixi.js": "^6.3.0",
     "prop-types": "^15.8.1",
@@ -53,6 +55,7 @@
     "react-dom": "^18.0.0",
     "react-player": "^2.10.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "socket.io-client": "^4.5.0"
   }
 }

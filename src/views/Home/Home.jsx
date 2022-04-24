@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 
 import * as PIXI from "pixi.js";
 
 // context
 import { useAudioController } from "../../context/AudioController";
+import { useSocket } from "context/SocketContext";
 
 // assets
 import starTextureImage from "../../assets/images/star.png";
@@ -61,10 +61,11 @@ function randomizeStar(star, initial) {
 const Home = (props) => {
   const ref = useRef(null);
 
-  const navigate = useNavigate();
+  const { socketState } = useSocket();
 
   const { setAudioControllerState } = useAudioController();
 
+  const [playerExist, setPlayerExist] = useState(false);
   const [started, setStarted] = useState(false);
   const [where, setWhere] = useState(0);
   const [warpSpeedS, setWarpSpeedS] = useState(0);
@@ -118,6 +119,20 @@ const Home = (props) => {
     };
   }, []);
 
+  const fPlayerExist = () => {
+    setPlayerExist(true);
+  };
+
+  useEffect(() => {
+    socketState.socket.on("exist", fPlayerExist);
+    const user = localStorage.getItem("player");
+    if (user !== null) {
+      socketState.socket.emit("load", {
+        player: user,
+      });
+    }
+  }, [socketState.socket]);
+
   useEffect(() => {
     warpSpeed = warpSpeedS;
   }, [warpSpeedS]);
@@ -142,7 +157,16 @@ const Home = (props) => {
       setWarpSpeedS(1);
     }, 1000);
     setTimeout(() => {
-      //      navigate("/game", { replace: true }, [navigate]);
+      window.location.href = "/game";
+    }, 5000);
+  };
+
+  const existPlayer = () => {
+    setStarted(true);
+    setTimeout(() => {
+      setWarpSpeedS(1);
+    }, 1000);
+    setTimeout(() => {
       window.location.href = "/game";
     }, 5000);
   };
@@ -153,7 +177,7 @@ const Home = (props) => {
         className="main"
         style={{ opacity: started ? 0 : 1, zIndex: started ? 0 : 1 }}
       >
-        {where === 0 && <Welcome start={start} />}
+        {where === 0 && <Welcome start={!playerExist ? start : existPlayer} />}
         {where === 1 && <CharacterCreation start={creation} />}
       </div>
     </div>

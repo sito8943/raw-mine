@@ -7,6 +7,7 @@ import App from "./App";
 // context
 import { AudioConfigProvider } from "./context/AudioConfig";
 import { AudioControllerProvider } from "./context/AudioController";
+import { SocketProvider } from "./context/SocketContext";
 
 // style
 import "./index.css";
@@ -19,10 +20,12 @@ const root = ReactDOMClient.createRoot(container);
 // Initial render: Render an element to the root.
 root.render(
   <StrictMode>
-    <AudioConfigProvider>
-      <AudioControllerProvider>
-        <App />
-      </AudioControllerProvider>
-    </AudioConfigProvider>
+    <SocketProvider>
+      <AudioConfigProvider>
+        <AudioControllerProvider>
+          <App />
+        </AudioControllerProvider>
+      </AudioConfigProvider>
+    </SocketProvider>
   </StrictMode>
 );
