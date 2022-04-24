@@ -19,6 +19,11 @@ button {
   border-radius: 15px;
 }
 
+.active {
+  background-color: #aaaaaa;
+  color: #636262;
+}
+
 input {
   border-radius: 15px;
   margin: 10px;

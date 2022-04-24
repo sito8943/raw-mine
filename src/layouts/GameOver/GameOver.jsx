@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import "./style.css";
 
 const GameOver = () => {
@@ -6,9 +5,9 @@ const GameOver = () => {
     <div className="game-over">
       <div className="home-form">
         <h1>Te han destruido</h1>
-        <Link to="/game" style={{ textDecoration: "none" }}>
+        <a href="/" className="link">
           Volver a empezar
-        </Link>
+        </a>
       </div>
     </div>
   );

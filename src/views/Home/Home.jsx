@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import * as PIXI from "pixi.js";
+
+// context
+import { useAudioController } from "../../context/AudioController";
 
 // assets
 import starTextureImage from "../../assets/images/star.png";
@@ -56,6 +60,10 @@ function randomizeStar(star, initial) {
 
 const Home = (props) => {
   const ref = useRef(null);
+
+  const navigate = useNavigate();
+
+  const { setAudioControllerState } = useAudioController();
 
   const [started, setStarted] = useState(false);
   const [where, setWhere] = useState(0);
@@ -116,6 +124,7 @@ const Home = (props) => {
 
   const start = () => {
     setStarted(true);
+    setAudioControllerState({ type: "click" });
     setTimeout(() => {
       setWarpSpeedS(1);
     }, 1000);
@@ -132,6 +141,10 @@ const Home = (props) => {
     setTimeout(() => {
       setWarpSpeedS(1);
     }, 1000);
+    setTimeout(() => {
+      //      navigate("/game", { replace: true }, [navigate]);
+      window.location.href = "/game";
+    }, 5000);
   };
 
   return (

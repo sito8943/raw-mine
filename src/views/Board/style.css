@@ -1,0 +1,67 @@
+.board {
+  overflow: scroll;
+  width: 100vw;
+  height: 100vh;
+}
+
+.bag {
+  padding: 20px;
+  position: absolute;
+  color: aliceblue;
+  background: #222222;
+  margin: 10px;
+  border-radius: 15px;
+  border: 1px dashed #646566;
+}
+
+.move-keys {
+  position: fixed;
+  z-index: 1;
+  bottom: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.drill {
+  position: fixed;
+  z-index: 1;
+  bottom: 1px;
+  right: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.move-keys div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+}
+
+.player {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background: #222333;
+  transition: all 500ms ease;
+}
+
+.cell {
+  min-width: 70px;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed gray;
+}
+
+.wall {
+  background: gray;
+}
+
+.grass {
+  background: #006f03;
+}

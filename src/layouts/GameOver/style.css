@@ -1,12 +1,23 @@
 .game-over {
   width: 100vw;
   height: 100vh;
+  background-color: #222333ac;
   position: absolute;
   z-index: 99;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: all 400ms ease;
+}
+
+.link {
+  padding: 20px;
+  text-decoration: none;
+  color: aliceblue;
+  background: #222222;
+  margin: 10px;
+  border-radius: 15px;
+  border: 1px dashed #646566;
 }
 
 .creation-form {

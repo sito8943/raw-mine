@@ -3,7 +3,11 @@ import React, { useState } from "react";
 // style
 import "../../views/Home/style.css";
 
+// context
+import { useAudioController } from "../../context/AudioController";
+
 const CharacterCreation = (props) => {
+  const { setAudioControllerState } = useAudioController();
   const { start } = props;
 
   const [name, setName] = useState("");
@@ -18,6 +22,7 @@ const CharacterCreation = (props) => {
 
   const submit = (e) => {
     e.preventDefault();
+    setAudioControllerState({ type: "click" });
     start(name);
   };
 

@@ -1,23 +1,23 @@
 export const MineralsEnum = [
-  { name: "Piedra", life: 15 }, // trash
-  { name: "Carbón", life: 17 }, // material
-  { name: "Estaño", life: 17 }, // material
-  { name: "Cobre", life: 20 }, // material
-  { name: "Hierro", life: 25 }, // material
-  { name: "Ojo de Tigre", life: 5 }, // to sell
-  { name: "Malaquita", life: 5 }, // to sell
-  { name: "Amatista", life: 5 }, // to sell
-  { name: "Oro", life: 17 }, // material +damage / to sell
-  { name: "Cuarzo", life: 40 }, // material
-  { name: "Jaspe Rojo", life: 5 }, // material +life
-  { name: "Calcita", life: 25 }, // material
-  { name: "Aventurina", life: 25 }, // material ++damage
-  { name: "Obsidiana", life: 70 }, // material ++defense
-  { name: "Ruby", life: 35 }, // material ++life
-  { name: "Safiro", life: 35 }, // material +++damage
-  { name: "Calcedonia", life: 35 }, // material +all
-  { name: "Diamante", life: 50 }, // material ++life ++defense
-  { name: "Esmeralda", life: 15 }, // material ++damage ++defense
+  { name: "Piedra", life: 15, type: 0 }, // trash
+  { name: "Carbón", life: 17, type: 1 }, // material
+  { name: "Estaño", life: 17, type: 2 }, // material
+  { name: "Cobre", life: 20, type: 3 }, // material
+  { name: "Hierro", life: 25, type: 4 }, // material
+  { name: "Ojo de Tigre", life: 5, type: 5 }, // to sell
+  { name: "Malaquita", life: 5, type: 6 }, // to sell
+  { name: "Amatista", life: 5, type: 7 }, // to sell
+  { name: "Oro", life: 17, type: 8 }, // material +damage / to sell
+  { name: "Cuarzo", life: 40, type: 9 }, // material
+  { name: "Jaspe Rojo", life: 5, type: 10 }, // material +life
+  { name: "Calcita", life: 25, type: 11 }, // material
+  { name: "Aventurina", life: 25, type: 12 }, // material ++damage
+  { name: "Obsidiana", life: 70, type: 13 }, // material ++defense
+  { name: "Ruby", life: 35, type: 14 }, // material ++life
+  { name: "Safiro", life: 35, type: 15 }, // material +++damage
+  { name: "Calcedonia", life: 35, type: 16 }, // material +all
+  { name: "Diamante", life: 50, type: 17 }, // material ++life ++defense
+  { name: "Esmeralda", life: 15, type: 18 }, // material ++damage ++defense
 ];
 
 export const MineralsEnumType = {
@@ -43,10 +43,12 @@ export const MineralsEnumType = {
 };
 
 export default class Mineral {
-  constructor(options = { name: "", life: 0 }, sprite) {
-    const { name, life } = options;
+  constructor(options = { name: "", life: 0, x: -1, y: -1, type: 0 }) {
+    const { name, life, x, y, type } = options;
     this.name = name;
-    this.sprite = sprite;
+    this.x = x;
+    this.y = y;
+    this.type = type;
     this.life = { max: life, current: life };
   }
 
@@ -69,16 +71,8 @@ export default class Mineral {
     return this.life;
   }
 
-  get Sprite() {
-    return this.sprite;
-  }
-
   set Name(newName) {
     this.name = newName;
-  }
-
-  set Sprite(newSprite) {
-    this.sprite = newSprite;
   }
 
   set Life(newLife) {

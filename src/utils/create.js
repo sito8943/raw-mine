@@ -1,26 +1,5 @@
 import * as PIXI from "pixi.js";
 
-// ores
-import stone from "../assets/images/ores/stone.png";
-import carbon from "../assets/images/ores/carbon.png";
-import estano from "../assets/images/ores/estano.png";
-import copper from "../assets/images/ores/copper.png";
-import iron from "../assets/images/ores/iron.png";
-import tigereye from "../assets/images/ores/tigereye.png";
-import malaquite from "../assets/images/ores/malaquite.png";
-import amatist from "../assets/images/ores/amatist.png";
-import gold from "../assets/images/ores/gold.png";
-import cuarzo from "../assets/images/ores/cuarzo.png";
-import jasperojo from "../assets/images/ores/jasperojo.png";
-import calcita from "../assets/images/ores/calcita.png";
-import aventurina from "../assets/images/ores/aventurina.png";
-import obsidiana from "../assets/images/ores/obsidiana.png";
-import ruby from "../assets/images/ores/ruby.png";
-import zaphire from "../assets/images/ores/zaphire.png";
-import calcedonia from "../assets/images/ores/calcedonia.png";
-import diamond from "../assets/images/ores/diamond.png";
-import esmerald from "../assets/images/ores/esmerald.png";
-
 // enemies
 import slime1 from "../assets/images/enemies/slime1.png";
 import slime2 from "../assets/images/enemies/slime2.png";
@@ -72,88 +51,83 @@ export const CreateMineral = (x, y) => {
   if (distribution[rand][rand1] === 1) {
     switch (rand) {
       case 1: {
-        mineralS = new PIXI.Sprite.from(carbon);
+        mineralS = "coal";
         break;
       }
       case 2: {
-        mineralS = new PIXI.Sprite.from(estano);
+        mineralS = "tin";
         break;
       }
       case 3: {
-        mineralS = new PIXI.Sprite.from(copper);
+        mineralS = "copper";
         break;
       }
       case 4: {
-        mineralS = new PIXI.Sprite.from(iron);
+        mineralS = "iron";
         break;
       }
       case 5: {
-        mineralS = new PIXI.Sprite.from(tigereye);
+        mineralS = "tigereye";
         break;
       }
       case 6: {
-        mineralS = new PIXI.Sprite.from(malaquite);
+        mineralS = "malachite";
         break;
       }
       case 7: {
-        mineralS = new PIXI.Sprite.from(amatist);
+        mineralS = "amathyst";
         break;
       }
       case 8: {
-        mineralS = new PIXI.Sprite.from(gold);
+        mineralS = "gold";
         break;
       }
       case 9: {
-        mineralS = new PIXI.Sprite.from(cuarzo);
+        mineralS = "quartz";
         break;
       }
       case 10: {
-        mineralS = new PIXI.Sprite.from(jasperojo);
+        mineralS = "red jasper";
         break;
       }
       case 11: {
-        mineralS = new PIXI.Sprite.from(calcita);
+        mineralS = "calcite";
         break;
       }
       case 12: {
-        mineralS = new PIXI.Sprite.from(aventurina);
+        mineralS = "aventurine";
         break;
       }
       case 13: {
-        mineralS = new PIXI.Sprite.from(obsidiana);
+        mineralS = "obsidian";
         break;
       }
       case 14: {
-        mineralS = new PIXI.Sprite.from(ruby);
+        mineralS = "ruby";
         break;
       }
       case 15: {
-        mineralS = new PIXI.Sprite.from(zaphire);
+        mineralS = "sapphire";
         break;
       }
       case 16: {
-        mineralS = new PIXI.Sprite.from(calcedonia);
+        mineralS = "chalcedony";
         break;
       }
       case 17: {
-        mineralS = new PIXI.Sprite.from(diamond);
+        mineralS = "diamond";
         break;
       }
       case 18: {
-        mineralS = new PIXI.Sprite.from(esmerald);
+        mineralS = "emerald";
         break;
       }
       default: {
-        mineralS = new PIXI.Sprite.from(stone);
+        mineralS = "stone";
         break;
       }
     }
-    mineral = new Mineral(MineralsEnum[rand], mineralS);
-    mineralS.width = 27;
-    mineralS.height = 27;
-    mineralS.x = x;
-    mineralS.y = y;
-    mineralS.z = 99;
+    mineral = new Mineral({ ...MineralsEnum[rand], x, y });
     return mineral;
   }
   return null;

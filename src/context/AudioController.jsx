@@ -13,6 +13,16 @@ const audioControllerReducer = (audioControllerState, action) => {
         dead: newDead,
       };
     }
+
+    case "click": {
+      let newClick = 0;
+      if (audioControllerState.click === 1) newClick = 2;
+      else newClick = 1;
+      return {
+        ...audioControllerState,
+        click: newClick,
+      };
+    }
     case "damage": {
       let newDamage = 0;
       if (audioControllerState.damage === 1) newDamage = 2;
@@ -60,7 +70,7 @@ const audioControllerReducer = (audioControllerState, action) => {
     }
     case "reloaded": {
       let newReloaded = 0;
-      if (audioControllerState.shot === 1) newReloaded = 2;
+      if (audioControllerState.reloaded === 1) newReloaded = 2;
       else newReloaded = 1;
       return {
         ...audioControllerState,
@@ -68,9 +78,12 @@ const audioControllerReducer = (audioControllerState, action) => {
       };
     }
     case "start":
+      let newStart = 0;
+      if (audioControllerState.start === 1) newStart = 2;
+      else newStart = 1;
       return {
         ...audioControllerState,
-        start: true,
+        start: newStart,
       };
     case "shot": {
       let newShot = 0;
@@ -98,6 +111,7 @@ const AudioControllerProvider = ({ children }) => {
       shot: false,
       damage: false,
       dead: false,
+      click: false,
     }
   );
 
