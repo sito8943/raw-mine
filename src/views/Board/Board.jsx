@@ -34,6 +34,8 @@ import sapphire from "../../assets/images/ores/sapphire.png";
 import chalcedony from "../../assets/images/ores/chalcedony.png";
 import diamond from "../../assets/images/ores/diamond.png";
 import emerald from "../../assets/images/ores/emerald.png";
+// enemies
+import slime1 from "../.."
 
 // character default
 import Default from "../../assets/images/character/default.png";
@@ -44,6 +46,7 @@ import { useAudioConfig } from "../../context/AudioConfig";
 import { CreateMineral } from "../../utils/create";
 
 // all images
+// minerals
 const mineralImages = [
   stone,
   coal,
@@ -66,6 +69,9 @@ const mineralImages = [
   emerald,
 ];
 
+// enemies
+const enemyImages = [];
+
 const Board = () => {
   const refClick = useOnclickOutside(() => {
     setShowBag(false);
@@ -77,6 +83,7 @@ const Board = () => {
   // world data
   const [field, setField] = useState([]);
   const [minerals, setMinerals] = useState([]);
+  const [enemies, setEnemies] = useState([]);
 
   const rows = () => {
     const final = [];
@@ -173,7 +180,6 @@ const Board = () => {
 
   const keyPress = (e) => {
     const { code } = e;
-    console.log(code);
     switch (code) {
       case "KeyW":
         return setW(true);
@@ -190,7 +196,6 @@ const Board = () => {
 
   const keyRelease = (e) => {
     const { code } = e;
-    console.log(code);
     switch (code) {
       case "KeyW":
         return setW(false);
@@ -262,6 +267,14 @@ const Board = () => {
     return false;
   };
 
+  const thereIsAEnemy = (y, x) => {
+    for (let i = 0; i < enemies.length; i += 1)
+      if (enemies[i].x === x && enemies[i].y === y) {
+        return true;
+      }
+    return false;
+  };
+
   const getMineral = (y, x) => {
     for (let i = 0; i < minerals.length; i += 1)
       if (minerals[i].x === x && minerals[i].y === y) {
@@ -270,8 +283,15 @@ const Board = () => {
     return -1;
   };
 
+  const getEnemy = (y, x) => {
+    for (let i = 0; i < enemies.length; i += 1)
+      if (enemies[i].x === x && enemies[i].y === y) {
+        return enemies[i];
+      }
+    return -1;
+  };
+
   const executeDrill = () => {
-    console.log(y, x);
     if (thereIsAMineral(y, x)) {
       setAudioControllerState({ type: "drill" });
       const mineral = getMineral(y, x);
@@ -399,6 +419,13 @@ const Board = () => {
                       <img
                         className="mineral"
                         src={mineralImages[getMineral(i, j).type]}
+                        alt="mineral"
+                      />
+                    )}
+                    {thereIsAEnemy(i, j) && (
+                      <img
+                        className="mineral"
+                        src={enemyImages[getEnemy(i, j).type]}
                         alt="mineral"
                       />
                     )}
