@@ -35,7 +35,10 @@ import chalcedony from "../../assets/images/ores/chalcedony.png";
 import diamond from "../../assets/images/ores/diamond.png";
 import emerald from "../../assets/images/ores/emerald.png";
 // enemies
-import slime1 from "../.."
+import slime1 from "../../assets/images/enemies/slime1.png";
+import slime2 from "../../assets/images/enemies/slime2.png";
+import slime3 from "../../assets/images/enemies/slime3.png";
+import slime4 from "../../assets/images/enemies/slime4.png";
 
 // character default
 import Default from "../../assets/images/character/default.png";
@@ -43,7 +46,7 @@ import Default from "../../assets/images/character/default.png";
 // context
 import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
-import { CreateMineral } from "../../utils/create";
+import { CreateEnemy, CreateMineral } from "../../utils/create";
 
 // all images
 // minerals
@@ -70,7 +73,7 @@ const mineralImages = [
 ];
 
 // enemies
-const enemyImages = [];
+const enemyImages = [slime1, slime2, slime3, slime4];
 
 const Board = () => {
   const refClick = useOnclickOutside(() => {
@@ -225,6 +228,7 @@ const Board = () => {
       })
     );
     const logicMatrix = [];
+    const logicEnemies = [];
     const logicMinerals = [];
     for (let i = 0; i < window.innerHeight / 30; i += 1) {
       const row = [];
@@ -246,13 +250,16 @@ const Board = () => {
           console.log(jtem.y, jtem.x);
           logicMatrix[jtem.y][jtem.x] = "grass";
           const mineral = CreateMineral(jtem.x, jtem.y);
+          const enemy = CreateEnemy(jtem.x, jtem.y);
           if (mineral !== null) logicMinerals.push(mineral);
+          if (enemy !== null) logicEnemies.push(enemy);
         } else {
           logicMatrix[jtem.y][jtem.x] = "wall";
         }
       });
     });
 
+    setEnemies(logicEnemies);
     setMinerals(logicMinerals);
     setField(logicMatrix);
     setPlayerSprite(Default);

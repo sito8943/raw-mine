@@ -10,24 +10,28 @@ export const AllDead = (objects) => {
 
 export const EnemiesEnum = [
   {
-    name: "Green slime",
+    name: "Purple Slime",
     life: { max: 15 },
     damage: 3,
+    type: 0,
   },
   {
-    name: "Blue slime",
+    name: "Orange Slime",
     life: { max: 17 },
     damage: 5,
+    type: 1,
   },
   {
-    name: "Red slime",
+    name: "Yellow Slime",
     life: { max: 19 },
     damage: 7,
+    type: 2,
   },
   {
-    name: "Black slime",
+    name: "Blue Slime",
     life: { max: 22 },
     damage: 9,
+    type: 3,
   },
   {
     name: "Planta carnivora",
@@ -82,12 +86,16 @@ export const EnemiesEnum = [
 ];
 
 export default class Enemy {
-  constructor(options = { name: "", life: { max: 0 }, damage: 0 }, sprite) {
-    const { name, life, damage } = options;
+  constructor(
+    options = { name: "", life: { max: 0 }, damage: 0, type: -1, x: -1, y: -1 }
+  ) {
+    const { name, life, damage, type, x, y } = options;
     this.name = name;
     this.life = { max: life.max, current: life.max };
     this.damage = damage;
-    this.sprite = sprite;
+    this.type = type;
+    this.x = x;
+    this.y = y;
   }
 
   TakeDamage(damage) {
@@ -121,20 +129,12 @@ export default class Enemy {
     return this.life;
   }
 
-  get Sprite() {
-    return this.sprite;
-  }
-
   set Life(newLife) {
     this.life = newLife;
   }
 
   set Name(newName) {
     this.name = newName;
-  }
-
-  set Sprite(newSprite) {
-    this.sprite = newSprite;
   }
 
   set Damage(newDamage) {
