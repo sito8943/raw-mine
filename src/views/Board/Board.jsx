@@ -48,6 +48,9 @@ import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
 import { CreateEnemy, CreateMineral } from "../../utils/create";
 
+// layouts
+import GameOver from "../../layouts/GameOver/GameOver";
+
 // all images
 // minerals
 const mineralImages = [
@@ -107,10 +110,25 @@ const Board = () => {
   const [x, setX] = useState(1);
   const [y, setY] = useState(1);
 
+  useEffect(() => {
+    onEnemyPosition();
+  }, [x, y]);
+
+  const onEnemyPosition = () => {
+    if (thereIsAEnemy(y, x)) {
+      playSound("damage");
+      const enemy = getEnemy(y, x);
+      if (player.TakeDamage(enemy.damage)) {
+        playSound("dead");
+        setDead(true);
+      }
+    }
+  };
+
   const [w, setW] = useState(false);
 
   useEffect(() => {
-    if (w) {
+    if (w && !dead) {
       if (y > 0 && field[y - 1][x] !== "wall") {
         setY(y - 1);
       }
@@ -120,7 +138,7 @@ const Board = () => {
   const [d, setD] = useState(false);
 
   useEffect(() => {
-    if (d) {
+    if (d && !dead) {
       if (x < field[0].length && field[y][x + 1] !== "wall") {
         setX(x + 1);
       }
@@ -130,7 +148,7 @@ const Board = () => {
   const [s, setS] = useState(false);
 
   useEffect(() => {
-    if (s) {
+    if (s && !dead) {
       if (y < field.length && field[y + 1][x] !== "wall") {
         setY(y + 1);
       }
@@ -140,7 +158,7 @@ const Board = () => {
   const [a, setA] = useState(false);
 
   useEffect(() => {
-    if (a) {
+    if (a && !dead) {
       if (x > 0 && field[y][x - 1] !== "wall") {
         setX(x - 1);
       }
@@ -148,16 +166,18 @@ const Board = () => {
   }, [a]);
 
   const handleMove = (e) => {
-    const { id } = e.target;
-    switch (id) {
-      case "bW":
-        return setW(true);
-      case "bD":
-        return setD(true);
-      case "bS":
-        return setS(true);
-      default: // a
-        return setA(true);
+    if (!dead) {
+      const { id } = e.target;
+      switch (id) {
+        case "bW":
+          return setW(true);
+        case "bD":
+          return setD(true);
+        case "bS":
+          return setS(true);
+        default: // a
+          return setA(true);
+      }
     }
   };
 
@@ -182,18 +202,20 @@ const Board = () => {
   const [playerSprite, setPlayerSprite] = useState("");
 
   const keyPress = (e) => {
-    const { code } = e;
-    switch (code) {
-      case "KeyW":
-        return setW(true);
-      case "KeyD":
-        return setD(true);
-      case "KeyS":
-        return setS(true);
-      case "KeyA":
-        return setA(true);
-      default:
-        break;
+    if (!dead) {
+      const { code } = e;
+      switch (code) {
+        case "KeyW":
+          return setW(true);
+        case "KeyD":
+          return setD(true);
+        case "KeyS":
+          return setS(true);
+        case "KeyA":
+          return setA(true);
+        default:
+          break;
+      }
     }
   };
 
@@ -299,13 +321,15 @@ const Board = () => {
   };
 
   const executeDrill = () => {
-    if (thereIsAMineral(y, x)) {
-      setAudioControllerState({ type: "drill" });
-      const mineral = getMineral(y, x);
-      if (mineral.TakeDamage(player.Drill.Damage)) {
-        mineral.x = -1;
-        mineral.y = -1;
-        player.Bag.AddMineral(mineral);
+    if (!dead) {
+      if (thereIsAMineral(y, x)) {
+        playSound("drill");
+        const mineral = getMineral(y, x);
+        if (mineral.TakeDamage(player.Drill.Damage)) {
+          mineral.x = -1;
+          mineral.y = -1;
+          player.Bag.AddMineral(mineral);
+        }
       }
     }
   };
@@ -406,6 +430,7 @@ const Board = () => {
       <div className="drill">
         <button onMouseDown={executeDrill}>🔨</button>
       </div>
+      {dead && <GameOver />}
       {field.length &&
         rows().map((item, i) => {
           return (
