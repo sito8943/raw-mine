@@ -1,4 +1,5 @@
 // components
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AudioController from "./components/AudioController/AudioController";
 
 // views
@@ -9,7 +10,11 @@ const App = () => {
   return (
     <div>
       <AudioController />
-      <Game />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Game />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };

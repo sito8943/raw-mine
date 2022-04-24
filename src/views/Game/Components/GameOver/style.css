@@ -1,0 +1,26 @@
+.game-over {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 400ms ease;
+}
+
+.creation-form {
+  flex-direction: column;
+  display: flex;
+}
+
+.home-form {
+  border-radius: 15px;
+  background: #222333;
+  border: 2px dashed #646566;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}

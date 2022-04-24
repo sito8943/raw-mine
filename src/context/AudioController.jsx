@@ -4,6 +4,24 @@ const AudioController = React.createContext();
 
 const audioControllerReducer = (audioControllerState, action) => {
   switch (action.type) {
+    case "dead": {
+      let newDead = 0;
+      if (audioControllerState.dead === 1) newDead = 2;
+      else newDead = 1;
+      return {
+        ...audioControllerState,
+        dead: newDead,
+      };
+    }
+    case "damage": {
+      let newDamage = 0;
+      if (audioControllerState.damage === 1) newDamage = 2;
+      else newDamage = 1;
+      return {
+        ...audioControllerState,
+        damage: newDamage,
+      };
+    }
     case "drill": {
       let newDrill = 0;
       if (audioControllerState.drill === 1) newDrill = 2;
@@ -78,6 +96,8 @@ const AudioControllerProvider = ({ children }) => {
       reloaded: false,
       start: false,
       shot: false,
+      damage: false,
+      dead: false,
     }
   );
 

@@ -1,7 +1,12 @@
 import { useEffect, useState, useRef } from "react";
+
+import useOnclickOutside from "react-cool-onclickoutside";
+
 import dungeoneer from "dungeoneer";
 
 import * as PIXI from "pixi.js";
+
+import GameOver from "./Components/GameOver/GameOver";
 
 // context
 import { useAudioController } from "../../context/AudioController";
@@ -110,13 +115,17 @@ const seed = new Date().getTime();
 
 const Game = () => {
   const ref = useRef(null);
+  const refClick = useOnclickOutside(() => {
+    setShowBag(false);
+  });
 
   const { useConfigState, setAudioConfigState } = useAudioConfig();
   const { setAudioControllerState } = useAudioController();
 
-  const [mousePosition, setMousePosition] = useState();
   const [showBag, setShowBag] = useState(false);
   const [attackSpeed, setAttackSpeed] = useState(player.Weapon.Reload);
+
+  const [dead, setDead] = useState(false);
 
   const [drill, setDrill] = useState(false);
 
@@ -607,8 +616,8 @@ const Game = () => {
     });
     // app.stage.addChild(sprite);
     const tiles = dungeon.tiles;
-    for (let i = 0; i < 25; ++i) {
-      for (let j = 0; j < 25; ++j) {
+    for (let i = 0; i < 36; ++i) {
+      for (let j = 0; j < 36; ++j) {
         if (tiles[i][j].type === "wall" || tiles[i][j].type === "door") {
           const wall = new PIXI.Sprite.from(dirt);
           wall.width = 45;
@@ -624,7 +633,9 @@ const Game = () => {
             app.stage.addChild(mineral.Sprite);
           }
           const enemy = CreateEnemy(wall.x, wall.y);
-          if (enemy !== null) {
+          const collision = colliderCollision(player.Sprite, "enemy");
+
+          if (enemy !== null && collision === false) {
             allColliders.push(enemy);
             allEnemies.push(enemy);
             app.stage.addChild(enemy.Sprite);
@@ -657,13 +668,19 @@ const Game = () => {
 
     // damage tick
     const damageTick = setInterval(() => {
-      if (!AllDead(allEnemies)) {
-        const enemy = colliderCollision(player.Sprite, "enemy");
-        if (enemy !== null && enemy !== false)
-          player.TakeDamage(allEnemies[enemy].Damage);
-        console.log(player.Life, allEnemies[enemy], allEnemies[enemy].Damage);
-      } else clearInterval(damageTick);
-    }, 1000);
+      if (player.Life.current > 0)
+        if (!AllDead(allEnemies)) {
+          const enemy = colliderCollision(player.Sprite, "enemy");
+          if (enemy !== null && enemy !== false) {
+            if (player.TakeDamage(allEnemies[enemy].Damage)) {
+              setAudioControllerState({ type: "dead" });
+              clearInterval(damageTick);
+              setDead(true);
+            } else setAudioControllerState({ type: "damage" });
+          }
+        } else clearInterval(damageTick);
+      else clearInterval(damageTick);
+    }, 5000);
 
     return () => {
       // On unload stop the application
@@ -886,6 +903,7 @@ const Game = () => {
 
   return (
     <div ref={ref}>
+      {dead && <GameOver />}
       <div className="keys">
         <div className="wContainer">
           <button
@@ -974,15 +992,60 @@ const Game = () => {
           </button>
         </div>
       </div>
-      <div className="bag">
-        <button onClick={() => setShowBag(!showBag)}>💼</button>
-        <div style={{ opacity: showBag ? 1 : 0 }}>
-          {player &&
-            Object.values(player.Bag.Objects).map((item, i) => (
-              <div key={i}>
-                {item.count} x {item.name}
-              </div>
-            ))}
+      <div
+        style={{
+          position: "absolute",
+        }}
+        className={!showBag ? "arrow" : "bag"}
+        ref={refClick}
+      >
+        <button
+          style={{ display: showBag ? "none" : "initial" }}
+          onClick={(e) => {
+            e.target.blur();
+            setShowBag(!showBag);
+          }}
+        >
+          💼
+        </button>
+        <div
+          style={{
+            opacity: showBag ? 1 : 0,
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.target.blur();
+              setShowBag(!showBag);
+            }}
+          >
+            💼
+          </button>
+          <div>
+            {player &&
+              Object.values(player.Bag.Objects).map((item, i) => (
+                <div key={i}>
+                  {item.count} x {item.name}
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+      <div
+        className="bag"
+        style={{
+          position: "absolute",
+          right: "10px",
+          opacity: 1,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span>
+            {player.Life.current} / {player.Life.max}
+          </span>
+          <span style={{ marginLeft: "5px", marginBottom: "5px" }}>🤖</span>
         </div>
       </div>
     </div>
