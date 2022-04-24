@@ -43,10 +43,13 @@ import slime4 from "../../assets/images/enemies/slime4.png";
 // character default
 import Default from "../../assets/images/character/default.png";
 
+// utils
+import { CreateEnemy, CreateMineral } from "../../utils/create";
+
 // context
 import { useAudioController } from "../../context/AudioController";
 import { useAudioConfig } from "../../context/AudioConfig";
-import { CreateEnemy, CreateMineral } from "../../utils/create";
+import { useSocket } from "../../context/SocketContext";
 
 // layouts
 import GameOver from "../../layouts/GameOver/GameOver";
@@ -82,6 +85,30 @@ const Board = () => {
   const refClick = useOnclickOutside(() => {
     setShowBag(false);
   });
+
+  const [playerExist, setPlayerExist] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+
+  const fPlayerExist = () => {
+    setPlayerSprite(`https://robohash.org/${playerName}.png`);
+    setPlayerExist(true);
+  };
+
+  const { socketState } = useSocket();
+
+  useEffect(() => {
+    if (socketState.socket) {
+      socketState.socket.on("exist", fPlayerExist);
+      const user = localStorage.getItem("player");
+      if (user !== null) {
+        setPlayerName(user);
+
+        socketState.socket.emit("load", {
+          player: user,
+        });
+      }
+    }
+  }, [socketState.socket]);
 
   const { useConfigState, setAudioConfigState } = useAudioConfig();
   const { setAudioControllerState } = useAudioController();

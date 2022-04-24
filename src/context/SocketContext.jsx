@@ -22,7 +22,7 @@ const socketReducer = (socketState, action) => {
 
 const SocketProvider = ({ children }) => {
   const [socketState, setSocketState] = React.useReducer(socketReducer, {
-    socket: {},
+    socket: undefined,
   });
 
   const value = { socketState, setSocketState };

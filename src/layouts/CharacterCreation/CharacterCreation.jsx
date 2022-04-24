@@ -10,15 +10,18 @@ import "../../views/Home/style.css";
 
 // context
 import { useAudioController } from "../../context/AudioController";
+import { useSocket } from "../../context/SocketContext";
 
 // character default
 import Default from "../../assets/images/character/default.png";
 
 const CharacterCreation = (props) => {
   const { setAudioControllerState } = useAudioController();
+  const { socketState } = useSocket();
   const { start } = props;
 
   const [name, setName] = useState("");
+  const [connected, setConnected] = useState(false);
 
   const handleInputs = (e) => {
     const { id, value } = e.target;
@@ -34,13 +37,12 @@ const CharacterCreation = (props) => {
     start(name);
   };
 
-  const connected = async () => {
-    const connect = await axios.get(`${config.serverUrl}`, {
-      headers: getAuth,
-    });
-    if (connect.statusError.indexOf("Error") > -1) return false;
-    else return true;
-  };
+  useEffect(() => {
+    if (socketState.socket) {
+      socketState.socket.on("reponse", () => setConnected(true));
+      socketState.socket.emit("connected", "");
+    }
+  }, [socketState.socket]);
 
   return (
     <div>
@@ -49,7 +51,7 @@ const CharacterCreation = (props) => {
         <form onSubmit={submit} className="flex-center">
           <img
             className="player-portrait"
-            src={connected() ? `https://robohash.org/${name}.png` : Default}
+            src={connected ? `https://robohash.org/${name}.png` : Default}
             alt="player-robot"
           />
           <div className="creation-form">

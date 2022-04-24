@@ -4,7 +4,11 @@ import * as PIXI from "pixi.js";
 
 // context
 import { useAudioController } from "../../context/AudioController";
-import { useSocket } from "context/SocketContext";
+import { useSocket } from "../../context/SocketContext";
+
+// layouts
+import Welcome from "../../layouts/Welcome/Welcome";
+import CharacterCreation from "../../layouts/CharacterCreation/CharacterCreation";
 
 // assets
 import starTextureImage from "../../assets/images/star.png";
@@ -14,8 +18,6 @@ import app from "../../utils/app";
 
 // styles
 import "./style.css";
-import Welcome from "../../layouts/Welcome/Welcome";
-import CharacterCreation from "../../layouts/CharacterCreation/CharacterCreation";
 
 let warpSpeed = 0;
 
@@ -62,7 +64,6 @@ const Home = (props) => {
   const ref = useRef(null);
 
   const { socketState } = useSocket();
-
   const { setAudioControllerState } = useAudioController();
 
   const [playerExist, setPlayerExist] = useState(false);
@@ -124,12 +125,14 @@ const Home = (props) => {
   };
 
   useEffect(() => {
-    socketState.socket.on("exist", fPlayerExist);
-    const user = localStorage.getItem("player");
-    if (user !== null) {
-      socketState.socket.emit("load", {
-        player: user,
-      });
+    if (socketState.socket) {
+      socketState.socket.on("exist", fPlayerExist);
+      const user = localStorage.getItem("player");
+      if (user !== null) {
+        socketState.socket.emit("load", {
+          player: user,
+        });
+      }
     }
   }, [socketState.socket]);
 
