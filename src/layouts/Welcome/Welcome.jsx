@@ -1,13 +1,14 @@
-import React from "react";
+// texts
+import texts from "../../lang/texts.json";
 
 const Welcome = (props) => {
-  const { start } = props;
+  const { start, lang } = props;
 
   return (
     <div>
       <div className="home-form">
-        <h1>RAW - Mines</h1>
-        <button onClick={start}>Comenzar</button>
+        <h1>{texts[lang].welcome.title}</h1>
+        <button onClick={start}>{texts[lang].welcome.submit}</button>
       </div>
     </div>
   );

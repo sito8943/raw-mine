@@ -1,0 +1,24 @@
+{
+  "es": {
+    "welcome": {
+      "title": "Minas en bruto",
+      "submit": "Comenzar"
+    },
+    "creation": {
+      "title": "Crea tu minero",
+      "label": "Introduce tu nombre:",
+      "submit": "Comenzar"
+    }
+  },
+  "en": {
+    "welcome": {
+      "title": "RAW - Mines",
+      "submit": "Start"
+    },
+    "creation": {
+      "title": "Create your miner",
+      "label": "Introduce your name:",
+      "submit": "Start"
+    }
+  }
+}

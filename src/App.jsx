@@ -18,24 +18,24 @@ import { useSocket } from "./context/SocketContext";
 import Board from "./views/Board/Board";
 import Home from "./views/Home/Home";
 
+// texts
+import texts from "./lang/texts.json";
+
 const App = () => {
   const { setSocketState } = useSocket();
-  const [socket, setSocket] = useState(null);
+  const [lang, setLang] = useState("es");
 
   useEffect(() => {
-    const newSocket = io(config.serverUrl);
-    setSocket(newSocket);
-    setSocketState({ type: "socket", socket: newSocket });
-    return () => newSocket.close();
-  }, [setSocket]);
+    setLang(window.navigator.language.split("-")[0]);
+  }, []);
 
   return (
     <div>
       <AudioController />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Board />} />
+          <Route path="/" element={<Home lang={lang} />} />
+          <Route path="/game" element={<Board lang={lang} />} />
         </Routes>
       </BrowserRouter>
     </div>

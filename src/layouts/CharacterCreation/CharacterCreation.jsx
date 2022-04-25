@@ -8,6 +8,9 @@ import config from "../../config";
 // style
 import "../../views/Home/style.css";
 
+// texts
+import texts from "../../lang/texts.json";
+
 // context
 import { useAudioController } from "../../context/AudioController";
 import { useSocket } from "../../context/SocketContext";
@@ -18,10 +21,9 @@ import Default from "../../assets/images/character/default.png";
 const CharacterCreation = (props) => {
   const { setAudioControllerState } = useAudioController();
   const { socketState } = useSocket();
-  const { start } = props;
+  const { start, lang } = props;
 
   const [name, setName] = useState("");
-  const [connected, setConnected] = useState(false);
 
   const handleInputs = (e) => {
     const { id, value } = e.target;
@@ -37,30 +39,25 @@ const CharacterCreation = (props) => {
     start(name);
   };
 
-  useEffect(() => {
-    if (socketState.socket) {
-      socketState.socket.on("reponse", () => setConnected(true));
-      socketState.socket.emit("connected", "");
-    }
-  }, [socketState.socket]);
-
   return (
     <div>
       <div className="home-form">
-        <h1>Crea tu minero</h1>
+        <h1>{texts[lang].creation.title}</h1>
         <form onSubmit={submit} className="flex-center">
           <img
             className="player-portrait"
-            src={connected ? `https://robohash.org/${name}.png` : Default}
+            src={
+              socketState.state ? `https://robohash.org/${name}.png` : Default
+            }
             alt="player-robot"
           />
           <div className="creation-form">
-            <label htmlFor="name">Introduce tu nombre:</label>
+            <label htmlFor="name">{texts[lang].creation.label}</label>
             <input value={name} onChange={handleInputs} id="name" />
           </div>
         </form>
         <button type="submit" onClick={submit}>
-          Comenzar
+          {texts[lang].creation.submit}
         </button>
       </div>
     </div>

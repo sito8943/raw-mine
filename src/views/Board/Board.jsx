@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 
 import useOnclickOutside from "react-cool-onclickoutside";
 
+import config from "../../config";
+
+// socket.io
+import io from "socket.io-client";
+
 import dungeoneer from "dungeoneer";
 
 // models
@@ -94,21 +99,35 @@ const Board = () => {
     setPlayerExist(true);
   };
 
-  const { socketState } = useSocket();
+  const { setSocketState } = useSocket();
 
   useEffect(() => {
-    if (socketState.socket) {
-      socketState.socket.on("exist", fPlayerExist);
-      const user = localStorage.getItem("player");
-      if (user !== null) {
+    const newSocket = io(config.serverUrl);
+    newSocket.on("connect", () => {
+      setSocketState({ type: "connected" });
+      console.log("connected");
+    });
+    newSocket.on("disconnect", () => {
+      setSocketState({ type: "disconnected" });
+      console.log("disconnected from server");
+    });
+    newSocket.on("connect_error", (data) => {
+      console.log("socket error");
+    });
+    const user = localStorage.getItem("player");
+    if (user !== null)
+      newSocket.emit("change:name", { name: user }, (result) => {
+        if (!result) {
+          return console.log(
+            "Could not be possible to join with previous name"
+          );
+        }
+        console.log(`Using name ${user}`);
         setPlayerName(user);
-
-        socketState.socket.emit("load", {
-          player: user,
-        });
-      }
-    }
-  }, [socketState.socket]);
+      });
+    setSocketState({ type: "socket", socket: newSocket });
+    return () => newSocket.close();
+  }, []);
 
   const { useConfigState, setAudioConfigState } = useAudioConfig();
   const { setAudioControllerState } = useAudioController();
@@ -336,7 +355,6 @@ const Board = () => {
     dungeon.tiles.forEach((item) => {
       item.forEach((jtem) => {
         if (jtem.type === "wall" || jtem.type === "door") {
-          console.log(jtem.y, jtem.x);
           logicMatrix[jtem.y][jtem.x] = "grass";
           const mineral = CreateMineral(jtem.x, jtem.y);
           const enemy = CreateEnemy(jtem.x, jtem.y);
@@ -458,7 +476,7 @@ const Board = () => {
       <div className="move-keys">
         <div>
           <button
-            className={w && "active"}
+            className={w ? "active" : ""}
             id="bW"
             onMouseDown={handleMove}
             onMouseUp={handleRelease}
@@ -468,7 +486,7 @@ const Board = () => {
         </div>
         <div>
           <button
-            className={a && "active"}
+            className={a ? "active" : ""}
             id="bA"
             onMouseDown={handleMove}
             onMouseUp={handleRelease}
@@ -476,7 +494,7 @@ const Board = () => {
             A
           </button>
           <button
-            className={d && "active"}
+            className={d ? "active" : ""}
             id="bD"
             onMouseDown={handleMove}
             onMouseUp={handleRelease}
@@ -486,7 +504,7 @@ const Board = () => {
         </div>
         <div>
           <button
-            className={s && "active"}
+            className={s ? "active" : ""}
             id="bS"
             onMouseDown={handleMove}
             onMouseUp={handleRelease}
@@ -512,7 +530,11 @@ const Board = () => {
                       {i === y && j === x && (
                         <img
                           className="player"
-                          src={playerSprite}
+                          src={
+                            playerName !== ""
+                              ? `https://robothash.org/${playerName}.png`
+                              : playerSprite
+                          }
                           alt="player-sprite"
                         />
                       )}

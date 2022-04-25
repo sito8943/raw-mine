@@ -4,7 +4,6 @@ import * as PIXI from "pixi.js";
 
 // context
 import { useAudioController } from "../../context/AudioController";
-import { useSocket } from "../../context/SocketContext";
 
 // layouts
 import Welcome from "../../layouts/Welcome/Welcome";
@@ -63,7 +62,7 @@ function randomizeStar(star, initial) {
 const Home = (props) => {
   const ref = useRef(null);
 
-  const { socketState } = useSocket();
+  const { lang } = props;
   const { setAudioControllerState } = useAudioController();
 
   const [playerExist, setPlayerExist] = useState(false);
@@ -120,21 +119,10 @@ const Home = (props) => {
     };
   }, []);
 
-  const fPlayerExist = () => {
-    setPlayerExist(true);
-  };
-
   useEffect(() => {
-    if (socketState.socket) {
-      socketState.socket.on("exist", fPlayerExist);
-      const user = localStorage.getItem("player");
-      if (user !== null) {
-        socketState.socket.emit("load", {
-          player: user,
-        });
-      }
-    }
-  }, [socketState.socket]);
+    const user = localStorage.getItem("player");
+    if (user !== null) setPlayerExist(true);
+  }, []);
 
   useEffect(() => {
     warpSpeed = warpSpeedS;
@@ -165,6 +153,7 @@ const Home = (props) => {
   };
 
   const existPlayer = () => {
+    setAudioControllerState({ type: "click" });
     setStarted(true);
     setTimeout(() => {
       setWarpSpeedS(1);
@@ -180,8 +169,10 @@ const Home = (props) => {
         className="main"
         style={{ opacity: started ? 0 : 1, zIndex: started ? 0 : 1 }}
       >
-        {where === 0 && <Welcome start={!playerExist ? start : existPlayer} />}
-        {where === 1 && <CharacterCreation start={creation} />}
+        {where === 0 && (
+          <Welcome lang={lang} start={!playerExist ? start : existPlayer} />
+        )}
+        {where === 1 && <CharacterCreation lang={lang} start={creation} />}
       </div>
     </div>
   );

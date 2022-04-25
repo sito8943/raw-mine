@@ -7,6 +7,16 @@ const SocketContext = React.createContext();
 
 const socketReducer = (socketState, action) => {
   switch (action.type) {
+    case "connected":
+      return {
+        state: true,
+        ...socketState,
+      };
+    case "disconnected":
+      return {
+        state: false,
+        ...socketState,
+      };
     case "set":
       return {
         socket: action.to,
