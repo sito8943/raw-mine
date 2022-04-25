@@ -134,12 +134,52 @@ const Board = () => {
   const [showBag, setShowBag] = useState(false);
   const [dead, setDead] = useState(false);
   const [player, setPlayer] = useState(null);
+  const [drill, setDrill] = useState(false);
   const [x, setX] = useState(1);
   const [y, setY] = useState(1);
 
+  const moveEnemies = () => {
+    for (let i = 0; i < enemies.length; ++i) {
+      const rand = Math.floor(Math.random() * 10);
+      switch (rand) {
+        case 0:
+          if (
+            enemies[i].y > 0 &&
+            field[enemies[i].y - 1][enemies[i].x] !== "wall"
+          )
+            enemies[i].y -= 1;
+          break;
+        case 1:
+          if (
+            enemies[i].x < field[0].length - 1 &&
+            field[enemies[i].y][enemies[i].x + 1] !== "wall"
+          )
+            enemies[i].x += 1;
+          break;
+        case 2:
+          if (
+            enemies[i].y < field.length - 1 &&
+            field[enemies[i].y + 1][enemies[i].x] !== "wall"
+          )
+            enemies[i].y += 1;
+          break;
+        case 3:
+          if (
+            enemies[i].x > 0 &&
+            field[enemies[i].y][enemies[i].x - 1] !== "wall"
+          )
+            enemies[i].x -= 1;
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   useEffect(() => {
+    moveEnemies();
     onEnemyPosition();
-  }, [x, y]);
+  }, [x, y, drill]);
 
   const onEnemyPosition = () => {
     if (thereIsAEnemy(y, x)) {
@@ -349,6 +389,7 @@ const Board = () => {
 
   const executeDrill = () => {
     if (!dead) {
+      setDrill(true);
       if (thereIsAMineral(y, x)) {
         playSound("drill");
         const mineral = getMineral(y, x);
@@ -455,7 +496,9 @@ const Board = () => {
         </div>
       </div>
       <div className="drill">
-        <button onMouseDown={executeDrill}>🔨</button>
+        <button onMouseUp={() => setDrill(false)} onMouseDown={executeDrill}>
+          🔨
+        </button>
       </div>
       {dead && <GameOver />}
       {field.length &&

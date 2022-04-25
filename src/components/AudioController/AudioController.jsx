@@ -26,11 +26,12 @@ const reloaded = new Audio(recharged);
 reloaded.volume = 0.2;
 const enemyHit = new Audio(enemyhit);
 const drill = new Audio(drill2);
+drill.volume = 0.2;
 const damage = new Audio(playerDamage);
 const dead = new Audio(deadPlayer);
 const click = new Audio(uiClick);
 const start = new Audio(uiStart);
-drill.volume = 0.2;
+
 const AudioController = () => {
   const { audioConfigState } = useAudioConfig();
   const { audioControllerState, setAudioControllerState } =

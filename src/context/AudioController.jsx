@@ -4,6 +4,15 @@ const AudioController = React.createContext();
 
 const audioControllerReducer = (audioControllerState, action) => {
   switch (action.type) {
+    case "ambient": {
+      let newAmbient = 0;
+      if (audioControllerState.ambient === 1) newAmbient = 2;
+      else newAmbient = 1;
+      return {
+        ...audioControllerState,
+        ambient: newAmbient,
+      };
+    }
     case "dead": {
       let newDead = 0;
       if (audioControllerState.dead === 1) newDead = 2;
