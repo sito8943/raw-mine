@@ -32,7 +32,7 @@ const CharacterCreation = (props) => {
         `http://localhost:8000/validate?name=${name}`
       );
       const data = await response.data;
-      if (data) if (data.result === "valid") return true;
+      if (data) if (data.result !== "invalid") return true;
       return false;
     } catch (e) {
       console.log(e);

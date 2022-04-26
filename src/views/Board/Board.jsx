@@ -60,6 +60,7 @@ import { useSocket } from "../../context/SocketContext";
 import GameOver from "../../layouts/GameOver/GameOver";
 import { AllDead } from "../../models/enemy";
 import axios from "axios";
+import Mineral, { MineralsEnum } from "../../models/mineral";
 
 // all images
 // minerals
@@ -108,7 +109,7 @@ const Board = () => {
           let points = 0;
           const bminerals = Object.values(item.bag);
           bminerals.forEach((jtem) => {
-            points += jtem;
+            points += jtem.count;
           });
           formatted.push({ name: item.name, points });
         });
@@ -125,16 +126,16 @@ const Board = () => {
 
   const [canRestart, setCanRestart] = useState(false);
 
-  const restart = async () => {
+  const restart = async (noReload, lplayer = undefined) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/save" /*"https://raw-mine-server/save"*/,
         {
-          bag: player.Bag,
-          player: playerName,
+          bag: lplayer ? lplayer.bag : player.Bag,
+          player: lplayer ? lplayer.name : playerName,
         }
       );
-      window.location.href = "/game";
+      if (!noReload) window.location.href = "/game";
     } catch (e) {
       console.log(e);
     }
@@ -156,36 +157,6 @@ const Board = () => {
 
   const { setSocketState } = useSocket();
   const [socket, setSocket] = useState(null);
-
-  useEffect(() => {
-    const newSocket = io(config.serverUrl);
-    newSocket.on("connect", () => {
-      setSocketState({ type: "connected" });
-      console.log("connected");
-    });
-    newSocket.on("disconnect", () => {
-      setSocketState({ type: "disconnected" });
-      console.log("disconnected from server");
-    });
-    newSocket.on("connect_error", (data) => {
-      console.log("socket error");
-    });
-    newSocket.on("send:ranking", (data) => {
-      console.log(data);
-    });
-    const user = localStorage.getItem("player");
-    if (user !== null)
-      newSocket.emit("change:name", { name: user }, (result) => {
-        if (!result) {
-          return console.log(
-            "Could not be possible to join with previous name"
-          );
-        }
-        console.log(`Using name ${user}`);
-        setPlayerName(user);
-      });
-    return () => newSocket.close();
-  }, []);
 
   const { useConfigState, setAudioConfigState } = useAudioConfig();
   const { setAudioControllerState } = useAudioController();
@@ -411,17 +382,24 @@ const Board = () => {
     });
 
     dungeon.tiles.forEach((item) => {
-      item.forEach((jtem) => {
-        if (jtem.type === "wall" || jtem.type === "door") {
-          logicMatrix[jtem.y][jtem.x] = "grass";
-          const mineral = CreateMineral(jtem.x, jtem.y);
-          const enemy = CreateEnemy(jtem.x, jtem.y);
-          if (mineral !== null) logicMinerals.push(mineral);
-          if (enemy !== null) logicEnemies.push(enemy);
-        } else {
-          logicMatrix[jtem.y][jtem.x] = "wall";
-        }
-      });
+      try {
+        item.forEach((jtem) => {
+          if (jtem.type === "wall" || jtem.type === "door") {
+            logicMatrix[Math.floor(jtem.y)][Math.floor(jtem.x)] = "grass";
+            const mineral = CreateMineral(
+              Math.floor(jtem.x),
+              Math.floor(jtem.y)
+            );
+            const enemy = CreateEnemy(Math.floor(jtem.x), Math.floor(jtem.y));
+            if (mineral !== null) logicMinerals.push(mineral);
+            if (enemy !== null) logicEnemies.push(enemy);
+          } else {
+            logicMatrix[Math.floor(jtem.y)][Math.floor(jtem.x)] = "wall";
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
     });
 
     setEnemies(logicEnemies);
@@ -429,6 +407,35 @@ const Board = () => {
     setField(logicMatrix);
     setPlayerSprite(Default);
     playSound("start");
+
+    const newSocket = io(config.serverUrl);
+    newSocket.on("connect", () => {
+      setSocketState({ type: "connected" });
+      console.log("connected");
+    });
+    newSocket.on("disconnect", () => {
+      setSocketState({ type: "disconnected" });
+      console.log("disconnected from server");
+    });
+    newSocket.on("connect_error", (data) => {
+      console.log("socket error");
+    });
+    newSocket.on("send:ranking", (data) => {
+      console.log(data);
+    });
+    const user = localStorage.getItem("player");
+    if (user !== null)
+      newSocket.emit("change:name", { name: user }, (result) => {
+        if (!result) {
+          return console.log(
+            "Could not be possible to join with previous name"
+          );
+        }
+        console.log(`Using name ${user}`);
+        setPlayerName(user);
+        restart(true, { name: user, bag: new Bag(BagsEnum[0]) });
+      });
+    return () => newSocket.close();
   }, []);
 
   const thereIsAMineral = (y, x) => {
@@ -585,17 +592,20 @@ const Board = () => {
         <div className="absolute">
           <div className="scroll">
             {players.length > 0 ? (
-              players.map((item, i) => (
-                <div key={i} className="flex">
-                  <img
-                    className="player"
-                    src={`https://robohash.org/${item.name}.png`}
-                    alt="player-sprite"
-                  />
-                  <span>{item.name} -</span>
-                  <span className="points">{item.points}</span>
-                </div>
-              ))
+              <div className="flex column">
+                <span style={{ margin: "10px 0" }}>Ranking</span>
+                {players.map((item, i) => (
+                  <div key={i} className="flex">
+                    <img
+                      className="player"
+                      src={`https://robohash.org/${item.name}.png`}
+                      alt="player-sprite"
+                    />
+                    <span>{item.name} -</span>
+                    <span className="points">{item.points}</span>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="loading">🌀</div>
             )}

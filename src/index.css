@@ -36,6 +36,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 5px;
 }
 
 .flex * {
@@ -46,12 +47,18 @@ body {
   color: aliceblue;
 }
 
+.column {
+  flex-direction: column;
+}
+
 .scroll {
   padding: 20px;
   background-color: #222222;
   overflow-y: auto;
   height: 300px;
-  width: 150px;
+  width: 170px;
+  border-radius: 15px;
+  border: 2px dashed #646566;
 }
 
 button {

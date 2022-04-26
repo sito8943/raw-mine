@@ -13,13 +13,17 @@ export default class Bag {
     const { name, capacity } = options;
     this.name = name;
     this.capacity = capacity;
-    this.objects = [];
+    this.objects = {};
   }
 
   AddMineral(mineral) {
-    if (this.objects[mineral.Name] === undefined)
-      this.objects[mineral.Name] = { name: mineral.Name, count: 1 };
-    else this.objects[mineral.Name].count += 1;
+    if (this.objects[mineral.type] === undefined)
+      this.objects[mineral.type] = {
+        name: mineral.Name,
+        count: 1,
+        type: mineral.type,
+      };
+    else this.objects[mineral.type].count += 1;
   }
 
   get Objects() {
