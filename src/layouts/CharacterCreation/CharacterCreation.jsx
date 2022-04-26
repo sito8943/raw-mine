@@ -24,6 +24,20 @@ const CharacterCreation = (props) => {
   const { start, lang } = props;
 
   const [name, setName] = useState("");
+  const [error, setError] = useState(false);
+
+  const validateName = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/validate?name=${name}`
+      );
+      const data = await response.data;
+      if (data) if (data.result === "valid") return true;
+      return false;
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleInputs = (e) => {
     const { id, value } = e.target;
@@ -33,10 +47,13 @@ const CharacterCreation = (props) => {
     }
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setAudioControllerState({ type: "click" });
-    start(name);
+    if (await validateName()) {
+      setAudioControllerState({ type: "click" });
+      start(name);
+    }
+    setError(true);
   };
 
   return (
@@ -54,6 +71,9 @@ const CharacterCreation = (props) => {
           <div className="creation-form">
             <label htmlFor="name">{texts[lang].creation.label}</label>
             <input value={name} onChange={handleInputs} id="name" />
+            <label style={{ opacity: error ? 1 : 0 }} htmlFor="name">
+              {texts[lang].creation.error}
+            </label>
           </div>
         </form>
         <button type="submit" onClick={submit}>

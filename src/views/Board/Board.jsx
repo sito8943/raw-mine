@@ -58,6 +58,8 @@ import { useSocket } from "../../context/SocketContext";
 
 // layouts
 import GameOver from "../../layouts/GameOver/GameOver";
+import { AllDead } from "../../models/enemy";
+import axios from "axios";
 
 // all images
 // minerals
@@ -91,6 +93,59 @@ const Board = () => {
     setShowBag(false);
   });
 
+  const [showRanking, setShowRanking] = useState(false);
+
+  const loadRanking = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/ranking" /*"https://raw-mine-server/ranking"*/
+      );
+      const data = await response.data;
+      if (data) {
+        console.log(data.result);
+        const formatted = [];
+        data.result.forEach((item, i) => {
+          let points = 0;
+          const bminerals = Object.values(item.bag);
+          bminerals.forEach((jtem) => {
+            points += jtem;
+          });
+          formatted.push({ name: item.name, points });
+        });
+        setPlayers(formatted);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    loadRanking();
+  }, [showRanking]);
+
+  const [canRestart, setCanRestart] = useState(false);
+
+  const restart = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/save" /*"https://raw-mine-server/save"*/,
+        {
+          bag: player.Bag,
+          player: playerName,
+        }
+      );
+      window.location.href = "/game";
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [players, setPlayers] = useState([]);
+
+  const refShowOffRanking = useOnclickOutside(() => {
+    setShowRanking(false);
+  });
+
   const [playerExist, setPlayerExist] = useState(false);
   const [playerName, setPlayerName] = useState("");
 
@@ -100,6 +155,7 @@ const Board = () => {
   };
 
   const { setSocketState } = useSocket();
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const newSocket = io(config.serverUrl);
@@ -114,6 +170,9 @@ const Board = () => {
     newSocket.on("connect_error", (data) => {
       console.log("socket error");
     });
+    newSocket.on("send:ranking", (data) => {
+      console.log(data);
+    });
     const user = localStorage.getItem("player");
     if (user !== null)
       newSocket.emit("change:name", { name: user }, (result) => {
@@ -125,7 +184,6 @@ const Board = () => {
         console.log(`Using name ${user}`);
         setPlayerName(user);
       });
-    setSocketState({ type: "socket", socket: newSocket });
     return () => newSocket.close();
   }, []);
 
@@ -415,6 +473,7 @@ const Board = () => {
           mineral.x = -1;
           mineral.y = -1;
           player.Bag.AddMineral(mineral);
+          if (AllDead(minerals)) setCanRestart(true);
         }
       }
     }
@@ -517,7 +576,33 @@ const Board = () => {
         <button onMouseUp={() => setDrill(false)} onMouseDown={executeDrill}>
           🔨
         </button>
+        <button ref={refShowOffRanking} onMouseUp={() => setShowRanking(true)}>
+          🏁
+        </button>
+        {canRestart && <button onMouseDown={restart}>🌀</button>}
       </div>
+      {showRanking && (
+        <div className="absolute">
+          <div className="scroll">
+            {players.length > 0 ? (
+              players.map((item, i) => (
+                <div key={i} className="flex">
+                  <img
+                    className="player"
+                    src={`https://robohash.org/${item.name}.png`}
+                    alt="player-sprite"
+                  />
+                  <span>{item.name} -</span>
+                  <span className="points">{item.points}</span>
+                </div>
+              ))
+            ) : (
+              <div className="loading">🌀</div>
+            )}
+          </div>
+        </div>
+      )}
+
       {dead && <GameOver />}
       {field.length &&
         rows().map((item, i) => {
@@ -532,7 +617,7 @@ const Board = () => {
                           className="player"
                           src={
                             playerName !== ""
-                              ? `https://robothash.org/${playerName}.png`
+                              ? `https://robohash.org/${playerName}.png`
                               : playerSprite
                           }
                           alt="player-sprite"

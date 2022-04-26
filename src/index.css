@@ -9,6 +9,51 @@ body {
   font-family: "seriousr2b", sans-serif;
 }
 
+.absolute {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.loading {
+  padding: 20px;
+  animation: right 2.5s infinite linear;
+}
+
+@keyframes right {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex * {
+  margin-right: 5px;
+}
+
+.flex span {
+  color: aliceblue;
+}
+
+.scroll {
+  padding: 20px;
+  background-color: #222222;
+  overflow-y: auto;
+  height: 300px;
+  width: 150px;
+}
+
 button {
   padding: 10px 20px;
   margin: 10px;
